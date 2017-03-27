@@ -1,5 +1,8 @@
 # Night Patrol
 
+[![Travis](https://img.shields.io/travis/jahed/night-patrol.svg)]()
+[![npm](https://img.shields.io/npm/v/night-patrol.svg)]()
+
 An Interactive CLI for Nightwatch.
 
 ## Warning
