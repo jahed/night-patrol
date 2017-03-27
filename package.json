@@ -11,7 +11,10 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "eslint ./bin/"
+    "test": "eslint ./bin/",
+    "release:patch": "npm version patch && npm publish && git push --tags",
+    "release:minor": "npm version minor && npm publish && git push --tags",
+    "release:major": "npm version major && npm publish && git push --tags"
   },
   "repository": {
     "type": "git",
