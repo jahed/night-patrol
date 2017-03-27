@@ -1,0 +1,38 @@
+{
+  "name": "night-patrol",
+  "version": "0.1.0",
+  "description": "Interactive CLI for Nightwatch Test Runner",
+  "bin" : {
+    "night-patrol" : "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jahed/nightwatch-cli.git"
+  },
+  "keywords": [
+    "nightwatch",
+    "test"
+  ],
+  "author": "Jahed Ahmed",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jahed/night-patrol/issues"
+  },
+  "homepage": "https://github.com/jahed/night-patrol",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "minimist": "^1.2.0",
+    "require-dir": "^0.3.1",
+    "shelljs": "^0.7.7",
+    "stripcolorcodes": "^0.1.0",
+    "vorpal": "^1.11.4"
+  }
+}
