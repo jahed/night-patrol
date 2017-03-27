@@ -18,7 +18,7 @@ function isTestSuite(object) {
 
 function getTestNames(testSuite) {
     return Object.keys(testSuite)
-            .filter(testCaseName => !['after', 'before'].includes(testCaseName))
+        .filter(testCaseName => !['after', 'before'].includes(testCaseName))
 }
 
 function flattenSuites(object) {
@@ -28,6 +28,7 @@ function flattenSuites(object) {
 
     const result = {}
 
+    /* eslint-disable no-restricted-syntax, no-prototype-builtins, no-continue */
     for (const key in object) {
         if (!object.hasOwnProperty(key)) {
             continue
@@ -50,12 +51,15 @@ function flattenSuites(object) {
             result[key] = object[key]
         }
     }
+    /* eslint-enable */
 
     return result
 }
 
 function getSuites(suitesRoot) {
-    return flattenSuites(requireDir(suitesRoot, { recurse: true }))
+    return flattenSuites(requireDir(suitesRoot, {
+        recurse: true
+    }))
 }
 
 function header({ heading, body }) {
@@ -74,7 +78,7 @@ if (!argv.config) {
 
 const nightWatchPath = argv.nightwatch || './node_modules/.bin/nightwatch'
 const nightWatchConfigPath = path.resolve(argv.config)
-const nightWatchConfig = require(nightWatchConfigPath)
+const nightWatchConfig = require(nightWatchConfigPath) // eslint-disable-line import/no-dynamic-require
 const suitesRoot = path.resolve(nightWatchConfig.src_folders)
 let lastFailedTests = {}
 
@@ -89,35 +93,35 @@ function runNightWatch({ suite, testname }) {
 
     const cmd = nightwatchArgs.join(' ')
 
-    return new Promise(resolve => {
-            shell.exec(cmd, (code, stdout, stderr) => {
+    return new Promise((resolve) => {
+        shell.exec(cmd, (code, stdout, stderr) => {
             resolve({ code, stdout, stderr })
         })
-}).then(({ code, stdout, stderr }) => {
+    }).then(({ code, stdout }) => {
         if (code === 0) {
-        lastFailedTests = {}
-        return Promise.resolve()
-    }
+            lastFailedTests = {}
+            return Promise.resolve()
+        }
 
-    const lines = stripcolorcodes(stdout).split('\n')
-    let currentSuite
+        const lines = stripcolorcodes(stdout).split('\n')
+        let currentSuite
 
-    lastFailedTests = _(lines)
+        lastFailedTests = _(lines)
             .map((line, lineNumber) => {
-            const match = /^\s+✖\s+(.+)$/.exec(line)
-            const suiteName = match && match[1]
-            if (suiteName) {
-                currentSuite = suiteName
-            }
+                const match = /^\s+✖\s+(.+)$/.exec(line)
+                const suiteName = match && match[1]
+                if (suiteName) {
+                    currentSuite = suiteName
+                }
 
-            return {
-                suiteName: currentSuite,
-                line,
-                lineNumber
-            }
-        })
-        .filter(r => !!r.suiteName)
-        .map(r => {
+                return {
+                    suiteName: currentSuite,
+                    line,
+                    lineNumber
+                }
+            })
+            .filter(r => !!r.suiteName)
+            .map((r) => {
                 const match = /\s+-\s+(.+)\s+\(.+\)$/.exec(r.line)
                 const testName = match && match[1]
                 return Object.assign({}, r, {
@@ -125,20 +129,24 @@ function runNightWatch({ suite, testname }) {
                     testName
                 })
             })
-        .filter(r => !!r.testName)
-        .keyBy('name')
-                .value()
-        })
+            .filter(r => !!r.testName)
+            .keyBy('name')
+            .value()
+
+        return Promise.resolve()
+    })
 }
 
 function clearCommands(vorpal) {
+    /* eslint-disable no-underscore-dangle */
     vorpal.commands
         .filter(command => !['help', 'exit', 'failures run', 'failures list'].includes(command._name))
-.forEach(command => command.remove())
+        .forEach(command => command.remove())
+    /* esline-enable */
 }
 
 function suiteCLI(suiteName, testNames) {
-    return vorpal => {
+    return (vorpal) => {
         const chalk = vorpal.chalk
         const realSpace = ' '
         const alternativeSpace = ' '
@@ -147,29 +155,34 @@ function suiteCLI(suiteName, testNames) {
             .delimiter(`${chalk.red('nightwatch:')}${chalk.yellow(`/${suiteName}`)}$`)
 
         vorpal.command('run [testname]', 'Run all tests or just one')
-            .autocomplete({ data: () => {
-                    // Vorpal doesn't like strings with spaces, use a different but visually similar character
+            .autocomplete({
+                data() {
                     return testNames.map(name => `"${name.replace(realSpace, alternativeSpace)}"`)
-    }})
-    .types({
-            string: ['testname']
-        })
+                }
+            })
+            .types({ string: ['testname'] })
             .action(({ testname: formattedTestName }) => {
-            const testname = formattedTestName ? formattedTestName.replace(alternativeSpace, realSpace) : undefined
-            return runNightWatch({ suite: suiteName, testname: testname })
-        })
+                const testName = formattedTestName
+                    ? formattedTestName.replace(alternativeSpace, realSpace)
+                    : undefined
+
+                return runNightWatch({
+                    suite: suiteName,
+                    testname: testName
+                })
+            })
 
         vorpal.command('back', 'Exit suite')
             .action(() => {
-            clearCommands(vorpal)
-            vorpal.use(rootCLI)
-        return Promise.resolve()
-    })
+                clearCommands(vorpal)
+                vorpal.use(rootCLI) // eslint-disable-line no-use-before-define
+                return Promise.resolve()
+            })
 
         vorpal.log(chalk.cyan(header({
-                heading: _.words(suiteName).map(word => _.upperFirst(word)).join(' '),
+            heading: _.words(suiteName).map(word => _.upperFirst(word)).join(' '),
             body: 'Remember, you will need to restart the session to refresh the autocomplete.'
-    })))
+        })))
         vorpal.execSync('help')
     }
 }
@@ -182,22 +195,22 @@ function rootCLI(vorpal) {
         .delimiter(`${chalk.red('nightwatch:')}${chalk.yellow('/')} $`)
 
     vorpal.command('run [suite]', 'Run all suites or just one')
-        .autocomplete({ data: () => Object.keys(suites) })
-.action(({ suite }) => {
-        return runNightWatch({ suite: suite })
-    })
+        .autocomplete({
+            data: () => Object.keys(suites)
+        })
+        .action(({ suite: suiteName }) => runNightWatch({ suite: suiteName }))
 
     vorpal.command('failures list', 'List all tests that failed in the previous run')
         .action(() => {
-        const testChoices = Object.keys(lastFailedTests)
-        if (testChoices.length === 0) {
-        vorpal.log('No tests failed on the last run.')
-        return Promise.resolve()
-    }
+            const testChoices = Object.keys(lastFailedTests)
+            if (testChoices.length === 0) {
+                vorpal.log('No tests failed on the last run.')
+                return Promise.resolve()
+            }
 
-    vorpal.log(testChoices.join('\n'))
-    return Promise.resolve()
-})
+            vorpal.log(testChoices.join('\n'))
+            return Promise.resolve()
+        })
 
 
     vorpal.command('failures run', 'Run all tests that failed in the previous run')
@@ -209,29 +222,34 @@ function rootCLI(vorpal) {
             }
 
             return this.prompt({
-                    name: 'testToRun',
-                    message: 'Which failed test would you like to run',
-                    type: 'list',
-                    choices: testChoices
-                }).then(({ testToRun }) => {
-                    const lastFailedTest = lastFailedTests[testToRun]
-                    return runNightWatch({ suite: lastFailedTest.suiteName, testname: lastFailedTest.testName })
+                name: 'testToRun',
+                message: 'Which failed test would you like to run',
+                type: 'list',
+                choices: testChoices
+            }).then(({ testToRun }) => {
+                const lastFailedTest = lastFailedTests[testToRun]
+                return runNightWatch({
+                    suite: lastFailedTest.suiteName,
+                    testname: lastFailedTest.testName
                 })
+            })
         })
 
     vorpal.command('suite <suite>', 'Switch to a suite')
-        .autocomplete({ data: () => Object.keys(suites) })
-.action(({ suite: suiteName }) => {
-        const testNames = suites[suiteName]
-        if (!testNames) {
-        vorpal.log(`Unknown suite "${suiteName}"`)
-        return Promise.resolve()
-    }
+        .autocomplete({
+            data: () => Object.keys(suites)
+        })
+        .action(({ suite: suiteName }) => {
+            const testNames = suites[suiteName]
+            if (!testNames) {
+                vorpal.log(`Unknown suite "${suiteName}"`)
+                return Promise.resolve()
+            }
 
-    clearCommands(vorpal)
-    vorpal.use(suiteCLI(suiteName, testNames))
-    return Promise.resolve()
-})
+            clearCommands(vorpal)
+            vorpal.use(suiteCLI(suiteName, testNames))
+            return Promise.resolve()
+        })
 
     vorpal.log(chalk.cyan(header({
         heading: 'NIGHTWATCH CLI',

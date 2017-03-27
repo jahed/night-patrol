@@ -2,8 +2,8 @@
   "name": "night-patrol",
   "version": "0.1.0",
   "description": "Interactive CLI for Nightwatch Test Runner",
-  "bin" : {
-    "night-patrol" : "./bin/cli.js"
+  "bin": {
+    "night-patrol": "./bin/cli.js"
   },
   "files": [
     "bin",
@@ -11,7 +11,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "eslint ./bin/"
   },
   "repository": {
     "type": "git",
@@ -34,5 +34,10 @@
     "shelljs": "^0.7.7",
     "stripcolorcodes": "^0.1.0",
     "vorpal": "^1.11.4"
+  },
+  "devDependencies": {
+    "eslint": "^3.18.0",
+    "eslint-config-airbnb-base": "^11.1.2",
+    "eslint-plugin-import": "^2.2.0"
   }
 }
