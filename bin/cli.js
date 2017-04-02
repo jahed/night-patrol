@@ -6,6 +6,7 @@ const _ = require('lodash')
 const shell = require('shelljs')
 const argv = require('minimist')(process.argv.slice(2))
 const path = require('path')
+const os = require('os')
 const stripcolorcodes = require('stripcolorcodes')
 
 function isTestCaseName(string) {
@@ -70,25 +71,36 @@ ${heading}
 ${body}`
 }
 
+function getDefaultNightwatchExec() {
+    switch (os.platform()) {
+        case 'win32': {
+            return 'node_modules\\.bin\\nightwatch'
+        }
+        default: {
+            return './node_modules/.bin/nightwatch'
+        }
+    }
+}
+
 if (!argv.config) {
     console.error('config is required\n')
     console.error('Usage:\n\t$ nightwatch-cli --config <path-to-nightwatch-config>')
     process.exit(1)
 }
 
-const nightWatchPath = argv.nightwatch || './node_modules/.bin/nightwatch'
+const nightWatchExec = argv.nightwatch || getDefaultNightwatchExec()
 const nightWatchConfigPath = path.resolve(argv.config)
 const nightWatchConfig = require(nightWatchConfigPath) // eslint-disable-line import/no-dynamic-require
 const suitesRoot = path.resolve(nightWatchConfig.src_folders)
 let lastFailedTests = {}
 
 function runNightWatch({ suite, testname }) {
-    const nightwatchArgs = [nightWatchPath, `--config ${nightWatchConfigPath}`]
+    const nightwatchArgs = [nightWatchExec, `--config ${nightWatchConfigPath}`]
     if (suite) {
         nightwatchArgs.push(`--test ${path.resolve(suitesRoot, `${suite}.js`)}`)
     }
     if (testname) {
-        nightwatchArgs.push(`--testcase '${testname}'`)
+        nightwatchArgs.push(`--testcase "${testname}"`)
     }
 
     const cmd = nightwatchArgs.join(' ')
@@ -157,13 +169,13 @@ function suiteCLI(suiteName, testNames) {
         vorpal.command('run [testname]', 'Run all tests or just one')
             .autocomplete({
                 data() {
-                    return testNames.map(name => `"${name.replace(realSpace, alternativeSpace)}"`)
+                    return testNames.map(name => `"${name.replace(new RegExp(realSpace, 'g'), alternativeSpace)}"`)
                 }
             })
             .types({ string: ['testname'] })
             .action(({ testname: formattedTestName }) => {
                 const testName = formattedTestName
-                    ? formattedTestName.replace(alternativeSpace, realSpace)
+                    ? formattedTestName.replace(new RegExp(alternativeSpace, 'g'), realSpace)
                     : undefined
 
                 return runNightWatch({

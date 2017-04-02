@@ -4,7 +4,9 @@
         "import"
     ],
     "rules": {
-        "indent": ["error", 4],
+        "indent": ["error", 4, {
+            "SwitchCase": 1
+        }],
         "semi": ["error", "never"],
         "comma-dangle": ["error", "never"],
         "max-len": ["error", 120],
