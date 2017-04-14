@@ -8,6 +8,7 @@ const argv = require('minimist')(process.argv.slice(2))
 const path = require('path')
 const os = require('os')
 const stripcolorcodes = require('stripcolorcodes')
+const packageJson = require('../package.json')
 
 function isTestCaseName(string) {
     return /\s/g.test(string)
@@ -19,7 +20,7 @@ function isTestSuite(object) {
 
 function getTestNames(testSuite) {
     return Object.keys(testSuite)
-        .filter(testCaseName => !['after', 'before'].includes(testCaseName))
+        .filter(testCaseName => !['before', 'beforeEach', 'after', 'afterEach'].includes(testCaseName))
 }
 
 function flattenSuites(object) {
@@ -88,37 +89,67 @@ if (!argv.config) {
     process.exit(1)
 }
 
-const nightWatchExec = argv.nightwatch || getDefaultNightwatchExec()
-const nightWatchConfigPath = path.resolve(argv.config)
-const nightWatchConfig = require(nightWatchConfigPath) // eslint-disable-line import/no-dynamic-require
-const suitesRoot = path.resolve(nightWatchConfig.src_folders)
-let lastFailedTests = {}
+const NIGHTWATCH_EXEC = argv.nightwatch || getDefaultNightwatchExec()
+const NIGHTWATCH_CONFIG_PATH = path.resolve(argv.config)
+const NIGHTWATCH_CONFIG = require(NIGHTWATCH_CONFIG_PATH) // eslint-disable-line import/no-dynamic-require
+const NIGHTWATCH_SUITES_ROOT = path.resolve(NIGHTWATCH_CONFIG.src_folders)
+const NIGHTWATCH_ENVIRONMENTS = NIGHTWATCH_CONFIG.test_settings
+
+if (_.isEmpty(NIGHTWATCH_ENVIRONMENTS)) {
+    console.error('Provided Nightwatch Config has no environments (config.test_settings).')
+    process.exit(1)
+}
+
+let CURRENT_NIGHTWATCH_ENV = NIGHTWATCH_ENVIRONMENTS.default ? 'default' : Object.keys(NIGHTWATCH_ENVIRONMENTS)[0]
+let LAST_FAILED_TESTS = {}
+
+const GLOBAL_COMMANDS = ['help', 'exit', 'failures run', 'failures list', 'env']
+
+
+function createCommandString(exec, args) {
+    const argString = _(args)
+        .map((value, key) => (
+            value
+                ? `--${key} "${value}"`
+                : `--${key}`
+        ))
+        .join(' ')
+
+    return argString
+        ? [exec, argString].join(' ')
+        : exec
+}
 
 function runNightWatch({ suite, testname }) {
-    const nightwatchArgs = [nightWatchExec, `--config ${nightWatchConfigPath}`]
-    if (suite) {
-        nightwatchArgs.push(`--test ${path.resolve(suitesRoot, `${suite}.js`)}`)
-    }
-    if (testname) {
-        nightwatchArgs.push(`--testcase "${testname}"`)
-    }
-
-    const cmd = nightwatchArgs.join(' ')
-
     return new Promise((resolve) => {
+        const nightWatchArgs = {
+            config: NIGHTWATCH_CONFIG_PATH,
+            env: CURRENT_NIGHTWATCH_ENV
+        }
+
+        if (suite) {
+            nightWatchArgs.test = path.resolve(NIGHTWATCH_SUITES_ROOT, `${suite}.js`)
+        }
+
+        if (testname) {
+            nightWatchArgs.testcase = testname
+        }
+
+        const cmd = createCommandString(NIGHTWATCH_EXEC, nightWatchArgs)
+
         shell.exec(cmd, (code, stdout, stderr) => {
             resolve({ code, stdout, stderr })
         })
     }).then(({ code, stdout }) => {
         if (code === 0) {
-            lastFailedTests = {}
+            LAST_FAILED_TESTS = {}
             return Promise.resolve()
         }
 
         const lines = stripcolorcodes(stdout).split('\n')
         let currentSuite
 
-        lastFailedTests = _(lines)
+        LAST_FAILED_TESTS = _(lines)
             .map((line, lineNumber) => {
                 const match = /^\s+✖\s+(.+)$/.exec(line)
                 const suiteName = match && match[1]
@@ -152,7 +183,7 @@ function runNightWatch({ suite, testname }) {
 function clearCommands(vorpal) {
     /* eslint-disable no-underscore-dangle */
     vorpal.commands
-        .filter(command => !['help', 'exit', 'failures run', 'failures list'].includes(command._name))
+        .filter(command => !GLOBAL_COMMANDS.includes(command._name))
         .forEach(command => command.remove())
     /* esline-enable */
 }
@@ -201,10 +232,13 @@ function suiteCLI(suiteName, testNames) {
 
 function rootCLI(vorpal) {
     const chalk = vorpal.chalk
-    const suites = getSuites(suitesRoot)
+    const suites = getSuites(NIGHTWATCH_SUITES_ROOT)
 
-    vorpal
-        .delimiter(`${chalk.red('nightwatch:')}${chalk.yellow('/')} $`)
+    const reloadDelimiter = () => {
+        vorpal.delimiter(`${chalk.red(`nightwatch(${CURRENT_NIGHTWATCH_ENV}):`)}${chalk.yellow('/')} $`)
+    }
+
+    reloadDelimiter()
 
     vorpal.command('run [suite]', 'Run all suites or just one')
         .autocomplete({
@@ -214,7 +248,7 @@ function rootCLI(vorpal) {
 
     vorpal.command('failures list', 'List all tests that failed in the previous run')
         .action(() => {
-            const testChoices = Object.keys(lastFailedTests)
+            const testChoices = Object.keys(LAST_FAILED_TESTS)
             if (testChoices.length === 0) {
                 vorpal.log('No tests failed on the last run.')
                 return Promise.resolve()
@@ -227,7 +261,7 @@ function rootCLI(vorpal) {
 
     vorpal.command('failures run', 'Run all tests that failed in the previous run')
         .action(function failuresRun() {
-            const testChoices = Object.keys(lastFailedTests)
+            const testChoices = Object.keys(LAST_FAILED_TESTS)
             if (testChoices.length === 0) {
                 vorpal.log('No tests failed on the last run.')
                 return Promise.resolve()
@@ -239,7 +273,7 @@ function rootCLI(vorpal) {
                 type: 'list',
                 choices: testChoices
             }).then(({ testToRun }) => {
-                const lastFailedTest = lastFailedTests[testToRun]
+                const lastFailedTest = LAST_FAILED_TESTS[testToRun]
                 return runNightWatch({
                     suite: lastFailedTest.suiteName,
                     testname: lastFailedTest.testName
@@ -263,8 +297,23 @@ function rootCLI(vorpal) {
             return Promise.resolve()
         })
 
+    vorpal.command('env <env>', 'Change current environment')
+        .autocomplete({
+            data: () => Object.keys(NIGHTWATCH_ENVIRONMENTS)
+        })
+        .action(({ env: chosenEnv }) => {
+            if (!NIGHTWATCH_CONFIG.test_settings[chosenEnv]) {
+                vorpal.log(`Unknown env: "${chosenEnv}"`)
+                return Promise.resolve()
+            }
+
+            CURRENT_NIGHTWATCH_ENV = chosenEnv
+            reloadDelimiter()
+            return Promise.resolve()
+        })
+
     vorpal.log(chalk.cyan(header({
-        heading: 'NIGHTWATCH CLI',
+        heading: `NIGHTWATCH CLI v${packageJson.version}`,
         body: 'Remember, you will need to restart the session to refresh the autocomplete.'
     })))
     vorpal.execSync('help')
