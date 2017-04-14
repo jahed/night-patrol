@@ -10,6 +10,10 @@
         "semi": ["error", "never"],
         "comma-dangle": ["error", "never"],
         "max-len": ["error", 120],
-        "no-console": "off"
+        "no-console": "off",
+        "object-shorthand": ["error", "methods", { "avoidExplicitReturnArrows": true } ]
+    },
+    "env": {
+        "node": true
     }
 }
