@@ -1,0 +1,31 @@
+Starting selenium server... started - PID:  8284
+
+[Left Drawer] Test Suite
+============================
+
+Running:  should open and close left drawer
+ √ Expected element <.app-container> to be present in 1000ms - element was present in 36ms
+ √ Expected element <.drawer-container> to not have attribute "class" which not contains: "active"
+ × Expected element <.drawer-container> to have attribute "class" which contains: "active"  - expected "contains 'active'" but got: "drawer-container"
+    at Object.should open and close left drawer (C:\Users\Jahed\projects\frontiernav\client\tests\scenarios\leftDrawer.js:19:21)
+
+
+FAILED:  1 assertions failed and 2 passed (7.337s)
+
+[Load Home Page] Test Suite
+===============================
+
+Running:  should load home page
+ √ Expected element <.app-container> to be present in 2000ms - element was present in 28ms
+
+OK. 1 assertions passed. (5.026s)
+
+ _________________________________________________
+
+ TEST FAILURE:  1 assertions failed, 3 passed. (13.281s)
+
+ × leftDrawer
+
+   - should open and close left drawer (7.337s)
+   Expected element <.drawer-container> to have attribute "class" which contains: "active"  - expected "contains 'active'" but got: "drawer-container"
+       at Object.should open and close left drawer (C:\Users\Jahed\projects\frontiernav\client\tests\scenarios\leftDrawer.js:19:21)

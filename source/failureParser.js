@@ -1,0 +1,52 @@
+const stripcolorcodes = require('stripcolorcodes')
+const _ = require('lodash')
+
+function splitLines(stdout) {
+    return stripcolorcodes(stdout).split('\n')
+}
+
+function getErrorSeparatorLineNumber(lines) {
+    return _.findIndex(lines, l => l.includes('TEST FAILURE'))
+}
+
+function parseSuiteName(lines) {
+    let currentSuite
+    return _(lines)
+        .slice(getErrorSeparatorLineNumber(lines))
+        .map(line => {
+            // eslint-disable-next-line no-control-regex
+            const match = /^\s+[^\x00-\x7F]\s+(.+)$/.exec(line)
+            const suiteName = match && match[1]
+            if (suiteName) {
+                currentSuite = suiteName
+            }
+
+            return {
+                suiteName: currentSuite,
+                line
+            }
+        })
+        .filter(r => !!r.suiteName)
+}
+
+function parse(stdout) {
+    const lines = parseSuiteName(splitLines(stdout))
+    return _(lines)
+        .map(r => {
+            const match = /\s+-\s+(.+)\s+\(.+\)$/.exec(r.line)
+            const testName = match && match[1]
+            return Object.assign({}, r, {
+                name: `/${r.suiteName}: "${testName}"`,
+                testName
+            })
+        })
+        .filter(r => !!r.testName)
+        .keyBy('name')
+        .value()
+}
+
+module.exports = {
+    parseSuiteName,
+    splitLines,
+    parse
+}
