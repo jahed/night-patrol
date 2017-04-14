@@ -11,7 +11,8 @@
         "comma-dangle": ["error", "never"],
         "max-len": ["error", 120],
         "no-console": "off",
-        "object-shorthand": ["error", "methods", { "avoidExplicitReturnArrows": true } ]
+        "object-shorthand": ["error", "methods", { "avoidExplicitReturnArrows": true } ],
+        "arrow-parens": ["error", "as-needed"]
     },
     "env": {
         "node": true
