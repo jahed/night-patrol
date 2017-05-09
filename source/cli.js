@@ -10,7 +10,13 @@ import * as templates from './templates'
 import * as nightwatchHelper from './nightwatchHelper'
 import * as shell from './shell'
 import store from './store'
-import { setNightwatchConfig, setNightwatchExecutable } from './actions/nightwatch'
+import {
+    setNightwatchConfig,
+    setNightwatchExecutable,
+    setCurrentSuite,
+    clearCurrentSuite,
+    setCurrentEnvironment
+} from './actions/nightwatch'
 
 const { dispatch, getState } = store
 const argv = minimist(process.argv.slice(2))
@@ -33,15 +39,6 @@ dispatch(setNightwatchConfig({
     path: path.resolve(argv.config)
 }))
 
-if (_.isEmpty(getState().nightwatch.environments)) {
-    console.error('Provided Nightwatch Config has no environments (config.test_settings).')
-    process.exit(1)
-}
-
-let CURRENT_NIGHTWATCH_SUITE = null
-let CURRENT_NIGHTWATCH_ENV = getState().nightwatch.environments.default
-    ? 'default'
-    : Object.keys(getState().nightwatch.environments)[0]
 let LAST_FAILED_TESTS = {}
 
 const GLOBAL_COMMANDS = ['help', 'exit', 'failures run', 'failures list', 'env', 'internals']
@@ -56,23 +53,24 @@ function clearCommands(vorpal) {
 
 function reloadDelimiter(vorpal) {
     const chalk = vorpal.chalk
+    const { nightwatch: { currentSuite, currentEnvironment } } = getState()
     vorpal.delimiter(
-        `${chalk.red(`nightwatch(${CURRENT_NIGHTWATCH_ENV}):`)}${chalk.yellow(`/${CURRENT_NIGHTWATCH_SUITE || ''}`)} $`
+        `${chalk.red(`nightwatch(${currentEnvironment}):`)}${chalk.yellow(`/${currentSuite || ''}`)} $`
     )
 }
 
 function clearSuite(vorpal) {
-    CURRENT_NIGHTWATCH_SUITE = null
+    dispatch(clearCurrentSuite())
     reloadDelimiter(vorpal)
 }
 
 function setSuite(vorpal, suite) {
-    CURRENT_NIGHTWATCH_SUITE = suite
+    dispatch(setCurrentSuite({ suite }))
     reloadDelimiter(vorpal)
 }
 
-function setEnv(vorpal, env) {
-    CURRENT_NIGHTWATCH_ENV = env
+function setEnv(vorpal, environment) {
+    dispatch(setCurrentEnvironment({ environment }))
     reloadDelimiter(vorpal)
 }
 
@@ -89,11 +87,13 @@ function getLastFailedTestNames() {
 }
 
 function runNightWatch({ suite, testname }) {
-    const { configPath, suitesRoot, executablePath } = getState().nightwatch
+    const {
+        nightwatch: { configPath, suitesRoot, executablePath, currentEnvironment }
+    } = getState()
 
     const nightWatchArgs = {
         config: configPath,
-        env: CURRENT_NIGHTWATCH_ENV
+        env: currentEnvironment
     }
 
     if (suite) {

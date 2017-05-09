@@ -15,7 +15,26 @@ export default function nightwatch(state = initialState, action) {
                 ...state,
                 configPath: action.payload.configPath,
                 suitesRoot: action.payload.suitesRoot,
-                environments: action.payload.environments
+                environments: action.payload.environments,
+                currentEnvironment: action.payload.currentEnvironment
+            }
+        }
+        case Action.SET_CURRENT_SUITE: {
+            return {
+                ...state,
+                currentSuite: action.payload.currentSuite
+            }
+        }
+        case Action.CLEAR_CURRENT_SUITE: {
+            return {
+                ...state,
+                currentSuite: null
+            }
+        }
+        case Action.SET_CURRENT_ENVIRONMENT: {
+            return {
+                ...state,
+                currentEnvironment: action.payload.currentEnvironment
             }
         }
         default: {
