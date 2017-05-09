@@ -3,21 +3,24 @@
   "version": "0.4.0",
   "description": "Interactive CLI for Nightwatch Test Runner",
   "bin": {
-    "night-patrol": "./bin/cli.js"
+    "night-patrol": "./dist/cli.js"
   },
   "files": [
-    "bin",
-    "source",
+    "dist",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "test": "npm run lint && npm run test:unit",
+    "test": "npm run test:lint && npm run test:unit",
+    "test:lint": "eslint ./bin/ ./source/",
     "test:unit": "ava --verbose ./source/**/*.test.js",
-    "lint": "eslint ./bin/ ./source/",
-    "release:patch": "npm version patch && npm publish && git push --follow-tags",
-    "release:minor": "npm version minor && npm publish && git push --follow-tags",
-    "release:major": "npm version major && npm publish && git push --follow-tags"
+    "build": "rm -r dist && mkdir dist && cross-env BABEL_ENV=build babel --out-dir dist source",
+    "build:watch": "npm run build -- --watch",
+    "release:patch": "npm run release:prepare && npm version patch && npm run release:current",
+    "release:minor": "npm run release:prepare && npm version minor && npm run release:current",
+    "release:major": "npm run release:prepare && npm version major && npm run release:current",
+    "release:prepare": "npm run test && npm run build",
+    "release:current": "npm publish && git push --follow-tags"
   },
   "repository": {
     "type": "git",
@@ -36,6 +39,8 @@
   "dependencies": {
     "lodash": "^4.17.4",
     "minimist": "^1.2.0",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.2.0",
     "require-dir": "^0.3.1",
     "shelljs": "^0.7.7",
     "stripcolorcodes": "^0.1.0",
@@ -43,8 +48,18 @@
   },
   "devDependencies": {
     "ava": "^0.19.1",
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "cross-env": "^4.0.0",
     "eslint": "^3.18.0",
     "eslint-config-airbnb-base": "^11.1.2",
     "eslint-plugin-import": "^2.2.0"
+  },
+  "ava": {
+    "require": "babel-register",
+    "babel": "inherit"
   }
 }

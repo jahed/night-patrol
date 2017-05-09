@@ -1,17 +1,17 @@
 import test from 'ava'
 import fs from 'fs'
 import path from 'path'
-import failureParser from './failureParser'
+import { splitLines, parseSuiteName, parse } from './failureParser'
 
 const failure = fs.readFileSync(path.resolve('test/data/failure-output.txt')).toString()
 
 test('should split lines', t => {
-    const result = failureParser.splitLines(failure)
+    const result = splitLines(failure)
     t.is(result.length, 32)
 })
 
 test('should parse suite names', t => {
-    const result = failureParser.parseSuiteName(failureParser.splitLines(failure)).value()
+    const result = parseSuiteName(splitLines(failure)).value()
     t.is(result.length, 6)
 
     result.forEach(r => {
@@ -20,7 +20,7 @@ test('should parse suite names', t => {
 })
 
 test('should parse failures', t => {
-    const result = failureParser.parse(failure)
+    const result = parse(failure)
 
     t.deepEqual(result, {
         '/leftDrawer: "should open and close left drawer"': {

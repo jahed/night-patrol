@@ -1,5 +1,5 @@
 import test from 'ava'
-import suitesParser from './suitesParser'
+import { parse } from './suitesParser'
 
 const tree = {
     leftDrawer: {
@@ -19,7 +19,7 @@ const tree = {
 }
 
 test('should flatten test tree', t => {
-    const result = suitesParser.parse(tree)
+    const result = parse(tree)
 
     t.deepEqual(result, {
         'leftDrawer/openClose': [

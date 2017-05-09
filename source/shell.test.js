@@ -1,8 +1,8 @@
 import test from 'ava'
-import shell from './shell'
+import { createCommandString } from './shell'
 
 test('should create a command string of args', t => {
-    const result = shell.createCommandString('somecommand', {
+    const result = createCommandString('somecommand', {
         'arg-1': 'value1',
         'arg-2': undefined,
         'arg-3': 'value3'

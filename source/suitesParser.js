@@ -1,19 +1,19 @@
 const _ = require('lodash')
 
-function isTestCaseName(string) {
+export function isTestCaseName(string) {
     return /\s/g.test(string)
 }
 
-function isTestSuite(object) {
+export function isTestSuite(object) {
     return _.some(object, (fn, key) => isTestCaseName(key))
 }
 
-function getTestNames(testSuite) {
+export function getTestNames(testSuite) {
     return Object.keys(testSuite)
         .filter(testCaseName => !['before', 'beforeEach', 'after', 'afterEach'].includes(testCaseName))
 }
 
-function flattenSuites(suiteTree) {
+export function parse(suiteTree) {
     if (isTestSuite(suiteTree)) {
         return getTestNames(suiteTree)
     }
@@ -27,7 +27,7 @@ function flattenSuites(suiteTree) {
         }
 
         if (typeof suiteTree[key] === 'object') {
-            const childObject = flattenSuites(suiteTree[key])
+            const childObject = parse(suiteTree[key])
             if (Array.isArray(childObject)) {
                 result[key] = childObject
             } else {
@@ -46,11 +46,4 @@ function flattenSuites(suiteTree) {
     /* eslint-enable */
 
     return result
-}
-
-module.exports = {
-    isTestCaseName,
-    isTestSuite,
-    getTestNames,
-    parse: flattenSuites
 }

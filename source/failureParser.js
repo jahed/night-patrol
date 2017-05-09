@@ -1,7 +1,7 @@
-const stripcolorcodes = require('stripcolorcodes')
-const _ = require('lodash')
+import stripcolorcodes from 'stripcolorcodes'
+import _ from 'lodash'
 
-function splitLines(stdout) {
+export function splitLines(stdout) {
     return stripcolorcodes(stdout).split('\n')
 }
 
@@ -9,7 +9,7 @@ function getErrorSeparatorLineNumber(lines) {
     return _.findIndex(lines, l => l.includes('TEST FAILURE'))
 }
 
-function parseSuiteName(lines) {
+export function parseSuiteName(lines) {
     let currentSuite
     return _(lines)
         .slice(getErrorSeparatorLineNumber(lines))
@@ -29,7 +29,7 @@ function parseSuiteName(lines) {
         .filter(r => !!r.suiteName)
 }
 
-function parse(stdout) {
+export function parse(stdout) {
     const lines = parseSuiteName(splitLines(stdout))
     return _(lines)
         .map(r => {
@@ -43,10 +43,4 @@ function parse(stdout) {
         .filter(r => !!r.testName)
         .keyBy('name')
         .value()
-}
-
-module.exports = {
-    parseSuiteName,
-    splitLines,
-    parse
 }

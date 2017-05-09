@@ -1,11 +1,9 @@
-function header({ heading, body }) {
+/* eslint-disable import/prefer-default-export */
+
+export function header({ heading, body }) {
     return `
 ${heading}
 =====================
 
 ${body}`
-}
-
-module.exports = {
-    header
 }

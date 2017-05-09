@@ -1,7 +1,8 @@
-const shell = require('shelljs')
-const _ = require('lodash')
+import shell from 'shelljs'
+import _ from 'lodash'
 
-function exec(commandString) {
+export function exec(commandString) {
+    console.log(commandString)
     return new Promise((resolve, reject) => {
         shell.exec(commandString, (code, stdout, stderr) => {
             if (code !== 0) {
@@ -13,7 +14,7 @@ function exec(commandString) {
     })
 }
 
-function createCommandString(command, args) {
+export function createCommandString(command, args) {
     const argString = _(args)
         .map((value, key) => (
             value
@@ -25,9 +26,4 @@ function createCommandString(command, args) {
     return argString
         ? [command, argString].join(' ')
         : command
-}
-
-module.exports = {
-    exec,
-    createCommandString
 }

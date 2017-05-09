@@ -1,6 +1,8 @@
-const os = require('os')
+/* eslint-disable import/prefer-default-export */
 
-function getDefaultNightwatchExec() {
+import os from 'os'
+
+export function getDefaultNightwatchExec() {
     switch (os.platform()) {
         case 'win32': {
             return 'node_modules\\.bin\\nightwatch'
@@ -9,8 +11,4 @@ function getDefaultNightwatchExec() {
             return './node_modules/.bin/nightwatch'
         }
     }
-}
-
-module.exports = {
-    getDefaultNightwatchExec
 }
