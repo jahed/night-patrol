@@ -18,7 +18,7 @@ import {
     setCurrentEnvironment
 } from './actions/nightwatch'
 
-const { dispatch, getState } = store
+const { dispatch, getState, subscribe } = store
 const argv = minimist(process.argv.slice(2))
 
 function getSuites(suitesRoot) {
@@ -49,29 +49,6 @@ function clearCommands(vorpal) {
         .filter(command => !GLOBAL_COMMANDS.includes(command._name))
         .forEach(command => command.remove())
     /* eslint-enable */
-}
-
-function reloadDelimiter(vorpal) {
-    const chalk = vorpal.chalk
-    const { nightwatch: { currentSuite, currentEnvironment } } = getState()
-    vorpal.delimiter(
-        `${chalk.red(`nightwatch(${currentEnvironment}):`)}${chalk.yellow(`/${currentSuite || ''}`)} $`
-    )
-}
-
-function clearSuite(vorpal) {
-    dispatch(clearCurrentSuite())
-    reloadDelimiter(vorpal)
-}
-
-function setSuite(vorpal, suite) {
-    dispatch(setCurrentSuite({ suite }))
-    reloadDelimiter(vorpal)
-}
-
-function setEnv(vorpal, environment) {
-    dispatch(setCurrentEnvironment({ environment }))
-    reloadDelimiter(vorpal)
 }
 
 function clearLastFailedTests() {
@@ -119,7 +96,7 @@ function runFailedTestByName(name) {
 
 function suiteCLI(suiteName, testNames) {
     return vorpal => {
-        setSuite(vorpal, suiteName)
+        dispatch(setCurrentSuite({ suite: suiteName }))
 
         const chalk = vorpal.chalk
         const realSpace = ' '
@@ -162,7 +139,7 @@ function rootCLI(vorpal) {
     const chalk = vorpal.chalk
     const suites = getSuites(getState().nightwatch.suitesRoot)
 
-    clearSuite(vorpal)
+    dispatch(clearCurrentSuite())
 
     vorpal.command('run [suite]', 'Run all suites or just one')
         .autocomplete({
@@ -235,7 +212,7 @@ function globalCLI(vorpal) {
                 return Promise.resolve()
             }
 
-            setEnv(vorpal, chosenEnv)
+            dispatch(setCurrentEnvironment({ environment: chosenEnv }))
             return Promise.resolve()
         })
 
@@ -250,4 +227,18 @@ const rootVorpal = new Vorpal()
 
 rootVorpal.use(globalCLI)
 rootVorpal.use(rootCLI)
+
+function reloadDelimiter(vorpal) {
+    const chalk = vorpal.chalk
+    const { nightwatch: { currentSuite, currentEnvironment } } = getState()
+    vorpal.delimiter(
+        `${chalk.red(`nightwatch(${currentEnvironment}):`)}${chalk.yellow(`/${currentSuite || ''}`)} $`
+    )
+}
+
+reloadDelimiter(rootVorpal)
+subscribe(() => {
+    reloadDelimiter(rootVorpal)
+})
+
 rootVorpal.show()
