@@ -124,7 +124,7 @@ function suiteCLI(suiteName, testNames) {
             vorpal.command('back', 'Exit suite')
                 .action(() => {
                     clearCommands(vorpal)
-                    vorpal.use(rootCLI) // eslint-disable-line no-use-before-define
+                    vorpal.use(rootCLI()) // eslint-disable-line no-use-before-define
                     return Promise.resolve()
                 })
         ]
@@ -243,9 +243,9 @@ rootVorpal.use(rootCLI())
 function reloadDelimiter(vorpal) {
     const chalk = vorpal.chalk
     const { nightwatch: { currentSuite, currentEnvironment } } = getState()
-    vorpal.delimiter(
-        `${chalk.red(`nightwatch(${currentEnvironment}):`)}${chalk.yellow(`/${currentSuite || ''}`)} $`
-    )
+    const delimiter = `${chalk.red(`nightwatch(${currentEnvironment}):`)}${chalk.yellow(`/${currentSuite || ''}`)} $`
+    vorpal.delimiter(delimiter)
+    vorpal.ui.delimiter(vorpal.delimiter())
 }
 
 reloadDelimiter(rootVorpal)
