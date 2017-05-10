@@ -102,131 +102,143 @@ function suiteCLI(suiteName, testNames) {
         const realSpace = ' '
         const alternativeSpace = ' '
 
-        vorpal.command('run [testname]', 'Run all tests or just one')
-            .autocomplete({
-                data() {
-                    return testNames.map(name => `"${name.replace(new RegExp(realSpace, 'g'), alternativeSpace)}"`)
-                }
-            })
-            .types({ string: ['testname'] })
-            .action(({ testname: formattedTestName }) => {
-                const testName = formattedTestName
-                    ? formattedTestName.replace(new RegExp(alternativeSpace, 'g'), realSpace)
-                    : undefined
-
-                return runNightWatch({
-                    suite: suiteName,
-                    testname: testName
+        const commands = [
+            vorpal.command('run [testname]', 'Run all tests or just one')
+                .autocomplete({
+                    data() {
+                        return testNames.map(name => `"${name.replace(new RegExp(realSpace, 'g'), alternativeSpace)}"`)
+                    }
                 })
-            })
+                .types({ string: ['testname'] })
+                .action(({ testname: formattedTestName }) => {
+                    const testName = formattedTestName
+                        ? formattedTestName.replace(new RegExp(alternativeSpace, 'g'), realSpace)
+                        : undefined
 
-        vorpal.command('back', 'Exit suite')
-            .action(() => {
-                clearCommands(vorpal)
-                vorpal.use(rootCLI) // eslint-disable-line no-use-before-define
-                return Promise.resolve()
-            })
+                    return runNightWatch({
+                        suite: suiteName,
+                        testname: testName
+                    })
+                }),
+
+            vorpal.command('back', 'Exit suite')
+                .action(() => {
+                    clearCommands(vorpal)
+                    vorpal.use(rootCLI) // eslint-disable-line no-use-before-define
+                    return Promise.resolve()
+                })
+        ]
 
         vorpal.log(chalk.cyan(templates.header({
             heading: _.words(suiteName).map(word => _.upperFirst(word)).join(' '),
             body: 'Remember, you will need to restart the session to refresh the autocomplete.'
         })))
         vorpal.execSync('help')
+
+        return commands
     }
 }
 
-function rootCLI(vorpal) {
-    const chalk = vorpal.chalk
-    const suites = getSuites(getState().nightwatch.suitesRoot)
+function rootCLI() {
+    return vorpal => {
+        const chalk = vorpal.chalk
+        const suites = getSuites(getState().nightwatch.suitesRoot)
 
-    dispatch(clearCurrentSuite())
+        dispatch(clearCurrentSuite())
 
-    vorpal.command('run [suite]', 'Run all suites or just one')
-        .autocomplete({
-            data: () => Object.keys(suites)
-        })
-        .action(({ suite: suiteName }) => runNightWatch({ suite: suiteName }))
+        const commands = [
+            vorpal.command('run [suite]', 'Run all suites or just one')
+                .autocomplete({
+                    data: () => Object.keys(suites)
+                })
+                .action(({ suite: suiteName }) => runNightWatch({ suite: suiteName })),
 
-    vorpal.command('suite <suite>', 'Switch to a suite')
-        .autocomplete({
-            data: () => Object.keys(suites)
-        })
-        .action(({ suite: suiteName }) => {
-            const testNames = suites[suiteName]
-            if (!testNames) {
-                vorpal.log(`Unknown suite "${suiteName}"`)
-                return Promise.resolve()
-            }
+            vorpal.command('suite <suite>', 'Switch to a suite')
+                .autocomplete({
+                    data: () => Object.keys(suites)
+                })
+                .action(({ suite: suiteName }) => {
+                    const testNames = suites[suiteName]
+                    if (!testNames) {
+                        vorpal.log(`Unknown suite "${suiteName}"`)
+                        return Promise.resolve()
+                    }
 
-            clearCommands(vorpal)
-            vorpal.use(suiteCLI(suiteName, testNames))
-            return Promise.resolve()
-        })
+                    clearCommands(vorpal)
+                    vorpal.use(suiteCLI(suiteName, testNames))
+                    return Promise.resolve()
+                })
+        ]
 
-    vorpal.log(chalk.cyan(templates.header({
-        heading: `NIGHT PATROL v${packageJson.version}`,
-        body: 'Remember, you will need to restart the session to refresh the autocomplete.'
-    })))
-    vorpal.execSync('help')
+        vorpal.log(chalk.cyan(templates.header({
+            heading: `NIGHT PATROL v${packageJson.version}`,
+            body: 'Remember, you will need to restart the session to refresh the autocomplete.'
+        })))
+        vorpal.execSync('help')
+
+        return commands
+    }
 }
 
 
-function globalCLI(vorpal) {
-    vorpal.command('failures list', 'List all tests that failed in the previous run')
-        .action(() => {
-            const testChoices = getLastFailedTestNames()
-            if (testChoices.length === 0) {
-                vorpal.log('No tests failed on the last run.')
-                return Promise.resolve()
-            }
+function globalCLI() {
+    return vorpal => [
+        vorpal.command('failures list', 'List all tests that failed in the previous run')
+                .action(() => {
+                    const testChoices = getLastFailedTestNames()
+                    if (testChoices.length === 0) {
+                        vorpal.log('No tests failed on the last run.')
+                        return Promise.resolve()
+                    }
 
-            vorpal.log(testChoices.join('\n'))
-            return Promise.resolve()
-        })
-
-
-    vorpal.command('failures run', 'Run all tests that failed in the previous run')
-        .action(function failuresRun() {
-            const testChoices = getLastFailedTestNames()
-            if (testChoices.length === 0) {
-                vorpal.log('No tests failed on the last run.')
-                return Promise.resolve()
-            }
-
-            return this.prompt({
-                name: 'testToRun',
-                message: 'Which failed test would you like to run',
-                type: 'list',
-                choices: testChoices
-            }).then(({ testToRun }) => runFailedTestByName(testToRun))
-        })
+                    vorpal.log(testChoices.join('\n'))
+                    return Promise.resolve()
+                }),
 
 
-    vorpal.command('env <env>', 'Change current environment')
-        .autocomplete({
-            data: () => Object.keys(getState().nightwatch.environments)
-        })
-        .action(({ env: chosenEnv }) => {
-            if (!getState().nightwatch.environments[chosenEnv]) {
-                vorpal.log(`Unknown env: "${chosenEnv}"`)
-                return Promise.resolve()
-            }
+        vorpal.command('failures run', 'Run all tests that failed in the previous run')
+                .action(function failuresRun() {
+                    const testChoices = getLastFailedTestNames()
+                    if (testChoices.length === 0) {
+                        vorpal.log('No tests failed on the last run.')
+                        return Promise.resolve()
+                    }
 
-            dispatch(setCurrentEnvironment({ environment: chosenEnv }))
-            return Promise.resolve()
-        })
+                    return this.prompt({
+                        name: 'testToRun',
+                        message: 'Which failed test would you like to run',
+                        type: 'list',
+                        choices: testChoices
+                    }).then(({ testToRun }) => runFailedTestByName(testToRun))
+                }),
 
-    vorpal.command('internals', 'View the internal Night Patrol state')
-        .action(() => {
-            console.log(JSON.stringify(getState(), null, 2))
-            return Promise.resolve()
-        })
+
+        vorpal.command('env <env>', 'Change current environment')
+                .autocomplete({
+                    data: () => Object.keys(getState().nightwatch.environments)
+                })
+                .action(({ env: chosenEnv }) => {
+                    if (!getState().nightwatch.environments[chosenEnv]) {
+                        vorpal.log(`Unknown env: "${chosenEnv}"`)
+                        return Promise.resolve()
+                    }
+
+                    dispatch(setCurrentEnvironment({ environment: chosenEnv }))
+                    return Promise.resolve()
+                }),
+
+        vorpal.command('internals', 'View the internal Night Patrol state')
+                .action(() => {
+                    console.log(JSON.stringify(getState(), null, 2))
+                    return Promise.resolve()
+                })
+    ]
 }
 
 const rootVorpal = new Vorpal()
-
-rootVorpal.use(globalCLI)
-rootVorpal.use(rootCLI)
+rootVorpal.history(`${packageJson.name}-${packageJson.version}`)
+rootVorpal.use(globalCLI())
+rootVorpal.use(rootCLI())
 
 function reloadDelimiter(vorpal) {
     const chalk = vorpal.chalk
