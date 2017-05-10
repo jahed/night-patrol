@@ -4,7 +4,6 @@ import _ from 'lodash'
 import minimist from 'minimist'
 import path from 'path'
 import packageJson from '../package.json'
-import * as failureParser from './parsers/failureParser'
 import * as suitesParser from './parsers/suitesParser'
 import * as templates from './templates'
 import * as nightwatchHelper from './helpers/nightwatchHelper'
@@ -17,10 +16,14 @@ import {
     clearCurrentSuite,
     setCurrentEnvironment
 } from './actions/nightwatch'
+import {
+    addTestFailuresFromNightwatchOutput,
+    clearTestFailures,
+    clearTestFailuresForSuite,
+    removeTestFailure
+} from './actions/testFailures'
 
 const { dispatch, getState, subscribe } = store
-
-let LAST_FAILED_TESTS = {}
 
 function useExtensions(vorpal, extensions) {
     extensions.forEach(extension => vorpal.use(extension))
@@ -33,16 +36,8 @@ function clearCommands(vorpal) {
         .forEach(command => command.remove())
 }
 
-function clearLastFailedTests() {
-    LAST_FAILED_TESTS = {}
-}
-
-function setLastFailedTests(v) {
-    LAST_FAILED_TESTS = v
-}
-
 function getLastFailedTestNames() {
-    return Object.keys(LAST_FAILED_TESTS)
+    return Object.keys(getState().testFailures)
 }
 
 function getSuites(suitesRoot) {
@@ -68,12 +63,27 @@ function runNightWatch({ suite, testname }) {
     }
 
     return shell.exec(shell.createCommandString(executablePath, nightWatchArgs))
-        .then(() => clearLastFailedTests())
-        .catch(({ stdout }) => setLastFailedTests(failureParser.parse(stdout)))
+        .then(() => {
+            if (testname) {
+                return dispatch(removeTestFailure({
+                    suiteName: suite,
+                    testName: testname
+                }))
+            }
+
+            if (suite) {
+                return dispatch(clearTestFailuresForSuite({
+                    suiteName: suite
+                }))
+            }
+
+            return dispatch(clearTestFailures())
+        })
+        .catch(({ stdout }) => dispatch(addTestFailuresFromNightwatchOutput({ stdout })))
 }
 
 function runFailedTestByName(name) {
-    const lastFailedTest = LAST_FAILED_TESTS[name]
+    const lastFailedTest = getState().testFailures[name]
     return runNightWatch({
         suite: lastFailedTest.suiteName,
         testname: lastFailedTest.testName
@@ -220,14 +230,14 @@ function globalCLI() {
                     return Promise.resolve()
                 }),
 
-        vorpal.command('internals', 'View the internal Night Patrol state')
-                .action(() => {
-                    console.log(JSON.stringify(getState(), null, 2))
+        vorpal.command('internals [path]', 'View the internal Night Patrol state')
+                .action(({ path: statePath }) => {
+                    const state = getState()
+                    console.log(JSON.stringify(statePath ? _.get(state, statePath) : state, null, 2))
                     return Promise.resolve()
                 })
     ]
 }
-
 
 const argv = minimist(process.argv.slice(2))
 
@@ -250,9 +260,19 @@ rootVorpal.history(`${packageJson.name}-${packageJson.version}`)
 useExtensions(rootVorpal, [globalCLI(), rootCLI()])
 
 function reloadDelimiter(vorpal) {
+    const { nightwatch: { currentSuite, currentEnvironment }, testFailures } = getState()
     const chalk = vorpal.chalk
-    const { nightwatch: { currentSuite, currentEnvironment } } = getState()
-    const delimiter = `${chalk.red(`nightwatch(${currentEnvironment}):`)}${chalk.yellow(`/${currentSuite || ''}`)} $`
+
+    const environmentParts = [chalk.cyan(currentEnvironment)]
+    const failureCount = _.size(testFailures)
+    if (failureCount > 0) {
+        environmentParts.push(chalk.red(chalk.bold(`×${failureCount}`)))
+    }
+
+    const environment = chalk.magenta(`nightwatch(${environmentParts.join('|')}):`)
+    const location = chalk.yellow(`${path.sep}${currentSuite || ''}`)
+
+    const delimiter = `${environment}${location} $`
     vorpal.delimiter(delimiter)
     vorpal.ui.delimiter(vorpal.delimiter())
 }

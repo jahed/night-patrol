@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const path = require('path')
 
 export function isTestCaseName(string) {
     return /\s/g.test(string)
@@ -36,7 +37,7 @@ export function parse(suiteTree) {
                         continue
                     }
 
-                    result[`${key}/${childKey}`] = childObject[childKey]
+                    result[`${key}${path.sep}${childKey}`] = childObject[childKey]
                 }
             }
         } else {

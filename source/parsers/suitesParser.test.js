@@ -1,4 +1,5 @@
 import test from 'ava'
+import path from 'path'
 import { parse } from './suitesParser'
 
 const tree = {
@@ -22,11 +23,11 @@ test('should flatten test tree', t => {
     const result = parse(tree)
 
     t.deepEqual(result, {
-        'leftDrawer/openClose': [
+        [`leftDrawer${path.sep}openClose`]: [
             'should open left drawer',
             'should close left drawer'
         ],
-        'load/loadHomePage': [
+        [`load${path.sep}loadHomePage`]: [
             'should load home page'
         ]
     })

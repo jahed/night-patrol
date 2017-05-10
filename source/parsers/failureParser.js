@@ -1,3 +1,4 @@
+import path from 'path'
 import stripcolorcodes from 'stripcolorcodes'
 import _ from 'lodash'
 
@@ -36,7 +37,7 @@ export function parse(stdout) {
             const match = /\s+-\s+(.+)\s+\(.+\)$/.exec(r.line)
             const testName = match && match[1]
             return Object.assign({}, r, {
-                name: `/${r.suiteName}: "${testName}"`,
+                name: `${path.sep}${r.suiteName}: "${testName}"`,
                 testName
             })
         })
