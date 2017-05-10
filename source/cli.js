@@ -19,36 +19,18 @@ import {
 } from './actions/nightwatch'
 
 const { dispatch, getState, subscribe } = store
-const argv = minimist(process.argv.slice(2))
-
-function getSuites(suitesRoot) {
-    return suitesParser.parse(requireDir(suitesRoot, { recurse: true }))
-}
-
-if (!argv.config) {
-    console.error('config is required\n')
-    console.error('Usage:\n\t$ night-patrol --config <path-to-nightwatch-config>')
-    process.exit(1)
-}
-
-dispatch(setNightwatchExecutable({
-    path: argv.nightwatch || nightwatchHelper.getDefaultNightwatchExec()
-}))
-
-dispatch(setNightwatchConfig({
-    path: path.resolve(argv.config)
-}))
 
 let LAST_FAILED_TESTS = {}
 
-const GLOBAL_COMMANDS = ['help', 'exit', 'failures run', 'failures list', 'env', 'internals']
+function useExtensions(vorpal, extensions) {
+    extensions.forEach(extension => vorpal.use(extension))
+}
 
 function clearCommands(vorpal) {
-    /* eslint-disable no-underscore-dangle */
+    const GLOBAL_COMMANDS = ['help', 'exit']
     vorpal.commands
-        .filter(command => !GLOBAL_COMMANDS.includes(command._name))
+        .filter(command => !GLOBAL_COMMANDS.includes(command._name)) // eslint-disable-line no-underscore-dangle
         .forEach(command => command.remove())
-    /* eslint-enable */
 }
 
 function clearLastFailedTests() {
@@ -61,6 +43,10 @@ function setLastFailedTests(v) {
 
 function getLastFailedTestNames() {
     return Object.keys(LAST_FAILED_TESTS)
+}
+
+function getSuites(suitesRoot) {
+    return suitesParser.parse(requireDir(suitesRoot, { recurse: true }))
 }
 
 function runNightWatch({ suite, testname }) {
@@ -124,7 +110,10 @@ function suiteCLI(suiteName, testNames) {
             vorpal.command('back', 'Exit suite')
                 .action(() => {
                     clearCommands(vorpal)
-                    vorpal.use(rootCLI()) // eslint-disable-line no-use-before-define
+                    useExtensions(vorpal, [
+                        globalCLI(), // eslint-disable-line no-use-before-define
+                        rootCLI() // eslint-disable-line no-use-before-define
+                    ])
                     return Promise.resolve()
                 })
         ]
@@ -165,7 +154,11 @@ function rootCLI() {
                     }
 
                     clearCommands(vorpal)
-                    vorpal.use(suiteCLI(suiteName, testNames))
+                    useExtensions(vorpal, [
+                        globalCLI(), // eslint-disable-line no-use-before-define
+                        suiteCLI(suiteName, testNames)
+                    ])
+
                     return Promise.resolve()
                 })
         ]
@@ -235,10 +228,26 @@ function globalCLI() {
     ]
 }
 
+
+const argv = minimist(process.argv.slice(2))
+
+if (!argv.config) {
+    console.error('config is required\n')
+    console.error('Usage:\n\t$ night-patrol --config <path-to-nightwatch-config>')
+    process.exit(1)
+}
+
+dispatch(setNightwatchExecutable({
+    path: argv.nightwatch || nightwatchHelper.getDefaultNightwatchExec()
+}))
+
+dispatch(setNightwatchConfig({
+    path: path.resolve(argv.config)
+}))
+
 const rootVorpal = new Vorpal()
 rootVorpal.history(`${packageJson.name}-${packageJson.version}`)
-rootVorpal.use(globalCLI())
-rootVorpal.use(rootCLI())
+useExtensions(rootVorpal, [globalCLI(), rootCLI()])
 
 function reloadDelimiter(vorpal) {
     const chalk = vorpal.chalk
