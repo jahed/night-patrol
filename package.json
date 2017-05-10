@@ -1,6 +1,6 @@
 {
   "name": "night-patrol",
-  "version": "0.4.0",
+  "version": "0.4.1-0",
   "description": "Interactive CLI for Nightwatch Test Runner",
   "bin": {
     "night-patrol": "./bin/cli.js"
