@@ -12,16 +12,20 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "npm run test:lint && npm run test:unit",
-    "test:lint": "eslint ./bin/ ./source/",
+    "test:lint": "eslint ./source/",
     "test:unit": "ava --verbose ./source/**/*.test.js",
-    "build": "rm -r dist && mkdir dist && cross-env BABEL_ENV=build babel --out-dir dist source",
-    "build:watch": "npm run build -- --watch",
-    "release:patch": "npm run release:prepare && npm version patch && npm run release:current",
-    "release:minor": "npm run release:prepare && npm version minor && npm run release:current",
-    "release:major": "npm run release:prepare && npm version major && npm run release:current",
-    "release:prepare": "npm run test && npm run build",
-    "release:current": "npm publish && git push --follow-tags"
+    "test": "npm run test:lint && npm run test:unit",
+    "prebuild": "rm -r dist && mkdir dist",
+    "build": "cross-env BABEL_ENV=build babel --out-dir dist source",
+    "watch": "npm run build -- --watch",
+    "preversion": "npm run test",
+    "version": "npm run build",
+    "postversion": "git push --follow-tags",
+    "prepublishOnly": "npm run test",
+    "publish:patch": "npm version patch && npm run publish",
+    "publish:minor": "npm version minor && npm run publish",
+    "publish:major": "npm version major && npm run publish",
+    "postpublish": "npm version prerelease"
   },
   "repository": {
     "type": "git",
