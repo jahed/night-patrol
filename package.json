@@ -22,7 +22,7 @@
     "watch": "npm run build -- --watch",
     "prerelease": "npm run test && npm run build",
     "release": "standard-version",
-    "postrelease": "git push --follow-tags && npm run publish"
+    "postrelease": "git push --follow-tags && npm publish"
   },
   "repository": {
     "type": "git",
