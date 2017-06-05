@@ -7,21 +7,16 @@ import packageJson from '../package.json'
 import * as suitesParser from './parsers/suitesParser'
 import * as templates from './templates'
 import * as nightwatchHelper from './helpers/nightwatchHelper'
-import * as shell from './shell'
 import store from './store'
 import {
     setNightwatchConfig,
     setNightwatchExecutable,
     setCurrentSuite,
     clearCurrentSuite,
-    setCurrentEnvironment
+    setCurrentEnvironment,
+    runNightWatch,
+    runFailedTestByName
 } from './actions/nightwatch'
-import {
-    addTestFailuresFromNightwatchOutput,
-    clearTestFailures,
-    clearTestFailuresForSuite,
-    removeTestFailure
-} from './actions/testFailures'
 
 const { dispatch, getState, subscribe } = store
 
@@ -42,52 +37,6 @@ function getLastFailedTestNames() {
 
 function getSuites(suitesRoot) {
     return suitesParser.parse(requireDir(suitesRoot, { recurse: true }))
-}
-
-function runNightWatch({ suite, testname }) {
-    const {
-        nightwatch: { configPath, suitesRoot, executablePath, currentEnvironment }
-    } = getState()
-
-    const nightWatchArgs = {
-        config: configPath,
-        env: currentEnvironment
-    }
-
-    if (suite) {
-        nightWatchArgs.test = path.resolve(suitesRoot, `${suite}.js`)
-    }
-
-    if (testname) {
-        nightWatchArgs.testcase = testname
-    }
-
-    return shell.exec(shell.createCommandString(executablePath, nightWatchArgs))
-        .then(() => {
-            if (testname) {
-                return dispatch(removeTestFailure({
-                    suiteName: suite,
-                    testName: testname
-                }))
-            }
-
-            if (suite) {
-                return dispatch(clearTestFailuresForSuite({
-                    suiteName: suite
-                }))
-            }
-
-            return dispatch(clearTestFailures())
-        })
-        .catch(({ stdout }) => dispatch(addTestFailuresFromNightwatchOutput({ stdout })))
-}
-
-function runFailedTestByName(name) {
-    const lastFailedTest = getState().testFailures[name]
-    return runNightWatch({
-        suite: lastFailedTest.suiteName,
-        testname: lastFailedTest.testName
-    })
 }
 
 function suiteCLI(suiteName, testNames) {
@@ -111,10 +60,10 @@ function suiteCLI(suiteName, testNames) {
                         ? formattedTestName.replace(new RegExp(alternativeSpace, 'g'), realSpace)
                         : undefined
 
-                    return runNightWatch({
+                    return dispatch(runNightWatch({
                         suite: suiteName,
                         testname: testName
-                    })
+                    }))
                 }),
 
             vorpal.command('back', 'Exit suite')
@@ -150,7 +99,7 @@ function rootCLI() {
                 .autocomplete({
                     data: () => Object.keys(suites)
                 })
-                .action(({ suite: suiteName }) => runNightWatch({ suite: suiteName })),
+                .action(({ suite: suiteName }) => dispatch(runNightWatch({ suite: suiteName }))),
 
             vorpal.command('suite <suite>', 'Switch to a suite')
                 .autocomplete({
@@ -212,7 +161,7 @@ function globalCLI() {
                         message: 'Which failed test would you like to run',
                         type: 'list',
                         choices: testChoices
-                    }).then(({ testToRun }) => runFailedTestByName(testToRun))
+                    }).then(({ testToRun }) => dispatch(runFailedTestByName(testToRun)))
                 }),
 
 
@@ -260,7 +209,13 @@ rootVorpal.history(`${packageJson.name}-${packageJson.version}`)
 useExtensions(rootVorpal, [globalCLI(), rootCLI()])
 
 function reloadDelimiter(vorpal) {
-    const { nightwatch: { currentSuite, currentEnvironment }, testFailures } = getState()
+    const {
+        nightwatch: {
+            currentSuite,
+            currentEnvironment
+        },
+        testFailures
+    } = getState()
     const chalk = vorpal.chalk
 
     const environmentParts = [chalk.cyan(currentEnvironment)]
@@ -273,8 +228,8 @@ function reloadDelimiter(vorpal) {
     const location = chalk.yellow(`${path.sep}${currentSuite || ''}`)
 
     const delimiter = `${environment}${location} $`
-    vorpal.delimiter(delimiter)
-    vorpal.ui.delimiter(vorpal.delimiter())
+    vorpal.delimiter(delimiter) // Future delimiters
+    vorpal.ui.delimiter(vorpal.delimiter()) // Current delimiter
 }
 
 reloadDelimiter(rootVorpal)
