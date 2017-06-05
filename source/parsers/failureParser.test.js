@@ -21,11 +21,12 @@ test('should parse suite names', t => {
 
 test('should parse failures', t => {
     const result = parse(failure)
+    const expectedName = `${path.sep}leftDrawer: "should open and close left drawer"`
 
     t.deepEqual(result, {
-        '/leftDrawer: "should open and close left drawer"': {
+        [expectedName]: {
             line: '   - should open and close left drawer (7.337s)',
-            name: '/leftDrawer: "should open and close left drawer"',
+            name: expectedName,
             suiteName: 'leftDrawer',
             testName: 'should open and close left drawer'
         }
