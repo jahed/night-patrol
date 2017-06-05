@@ -20,14 +20,9 @@
     "prebuild": "rm -r dist && mkdir dist",
     "build": "cross-env BABEL_ENV=build babel --out-dir dist source",
     "watch": "npm run build -- --watch",
-    "preversion": "npm run test",
-    "version": "npm run build",
-    "postversion": "git push --follow-tags",
-    "prepublishOnly": "npm run test",
-    "publish:patch": "npm version patch && npm run publish",
-    "publish:minor": "npm version minor && npm run publish",
-    "publish:major": "npm version major && npm run publish",
-    "postpublish": "npm version prerelease"
+    "prerelease": "npm run test && npm run build",
+    "release": "standard-version",
+    "postrelease": "git push --follow-tags && npm run publish"
   },
   "repository": {
     "type": "git",
@@ -66,7 +61,8 @@
     "eslint": "^3.18.0",
     "eslint-config-airbnb-base": "^11.1.2",
     "eslint-plugin-import": "^2.2.0",
-    "husky": "^0.13.4"
+    "husky": "^0.13.4",
+    "standard-version": "^4.0.0"
   },
   "ava": {
     "require": "babel-register",
