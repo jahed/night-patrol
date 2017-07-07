@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "prepush": "npm test",
-    "cm": "git-cz",
+    "commit": "git-cz",
     "start": "babel-node ./source/cli.js",
     "test:lint": "eslint ./source/",
     "test:unit": "ava --verbose ./source/**/*.test.js",

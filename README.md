@@ -5,10 +5,6 @@
 
 An Interactive CLI for Nightwatch.
 
-## Warning
-
-This project was hacked together. I may tidy it up and write some tests for it in the future. If you have any issues, feel free to make an issue for it so I know if people are interested in using it.
-
 ## Installation
 
 ```sh
