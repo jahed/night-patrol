@@ -6,10 +6,24 @@
 
 An Interactive CLI for Nightwatch.
 
+- [Introducing Night Patrol](https://medium.com/unruly-engineering/night-patrol-b9239dfa927)
+
 ## Installation
+
+### Project Command
+
+```
+npm install --save-dev night-patrol
+
+yarn add --dev night-patrol
+```
+
+### Global Command
 
 ```sh
 npm install -g night-patrol
+
+yarn global add night-patrol
 ```
 
 ## Usage
