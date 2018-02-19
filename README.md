@@ -6,7 +6,7 @@
 
 An Interactive CLI for Nightwatch.
 
-- [Introducing Night Patrol](https://medium.com/unruly-engineering/night-patrol-b9239dfa927)
+- [Introducing Night Patrol](https://jahed.io/2018/01/29/introducing-night-patrol/)
 
 ## Installation
 
