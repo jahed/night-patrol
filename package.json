@@ -23,7 +23,9 @@
     "watch": "npm run build -- --watch",
     "prerelease": "npm run test && npm run build",
     "release": "standard-version",
-    "postrelease": "git push --follow-tags && npm publish"
+    "postrelease": "git push --follow-tags && npm publish",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -47,7 +49,8 @@
     "require-dir": "^0.3.1",
     "shelljs": "^0.7.7",
     "stripcolorcodes": "^0.1.0",
-    "vorpal": "^1.11.4"
+    "vorpal": "^1.11.4",
+    "snyk": "^1.88.0"
   },
   "devDependencies": {
     "ava": "^0.19.1",
@@ -73,5 +76,6 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  }
+  },
+  "snyk": true
 }
