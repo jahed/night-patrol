@@ -1,12 +1,12 @@
 # Night Patrol
 
+An Interactive CLI for Nightwatch. Check out the blog post: "[Introducing Night Patrol](https://jahed.io/2018/01/29/introducing-night-patrol/)".
+
+![Demonstration](https://www-static.jahed.io/night-patrol/np1.gif)
+
 [![Travis](https://img.shields.io/travis/jahed/night-patrol.svg)](https://travis-ci.org/search/night-patrol)
 [![npm](https://img.shields.io/npm/v/night-patrol.svg)](https://www.npmjs.com/package/night-patrol)
 [![Patreon](https://img.shields.io/badge/patreon-donate-f96854.svg)](https://www.patreon.com/jahed)
-
-An Interactive CLI for Nightwatch.
-
-- [Introducing Night Patrol](https://jahed.io/2018/01/29/introducing-night-patrol/)
 
 ## Installation
 
