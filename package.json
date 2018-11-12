@@ -17,7 +17,7 @@
     "test:lint": "eslint ./source/",
     "test:unit": "ava --verbose ./source/**/*.test.js",
     "test": "yarn test:lint && yarn test:unit",
-    "prebuild": "rm -r dist && mkdir dist",
+    "prebuild": "rimraf dist && mkdir dist",
     "build": "BABEL_ENV=build babel --out-dir dist source",
     "watch": "yarn build -- --watch",
     "prerelease": "yarn test && yarn build",
@@ -61,6 +61,7 @@
     "eslint-config-airbnb-base": "^11.1.2",
     "eslint-plugin-import": "^2.2.0",
     "husky": "^1.1.3",
+    "rimraf": "^2.6.2",
     "semantic-release": "^15.10.8"
   },
   "ava": {
