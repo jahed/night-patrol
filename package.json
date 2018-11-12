@@ -12,18 +12,18 @@
     "LICENSE"
   ],
   "scripts": {
-    "prepush": "npm test",
+    "prepush": "yarn test",
     "commit": "git-cz",
     "start": "babel-node ./source/cli.js",
     "test:lint": "eslint ./source/",
     "test:unit": "ava --verbose ./source/**/*.test.js",
-    "test": "npm run test:lint && npm run test:unit",
+    "test": "yarn test:lint && yarn test:unit",
     "prebuild": "rm -r dist && mkdir dist",
     "build": "cross-env BABEL_ENV=build babel --out-dir dist source",
-    "watch": "npm run build -- --watch",
-    "prerelease": "npm run test && npm run build",
+    "watch": "yarn build -- --watch",
+    "prerelease": "yarn test && yarn build",
     "release": "standard-version",
-    "postrelease": "git push --follow-tags && npm publish"
+    "postrelease": "git push --follow-tags && yarn publish"
   },
   "repository": {
     "type": "git",
