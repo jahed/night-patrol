@@ -12,14 +12,13 @@
     "LICENSE"
   ],
   "scripts": {
-    "prepush": "yarn test",
     "start": "babel-node ./source/cli.js",
     "test:lint": "eslint ./source/",
     "test:unit": "ava --verbose ./source/**/*.test.js",
     "test": "yarn test:lint && yarn test:unit",
     "prebuild": "rimraf dist && mkdir dist",
     "build": "BABEL_ENV=build babel --out-dir dist source",
-    "watch": "yarn build -- --watch",
+    "watch": "yarn build --watch",
     "push:git": "git push && git push --tags",
     "prepublishOnly": "yarn test && yarn build && standard-version",
     "postpublish": "yarn push:git"
