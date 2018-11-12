@@ -15,6 +15,7 @@
         "arrow-parens": ["error", "as-needed"]
     },
     "env": {
-        "node": true
+        "node": true,
+        "jest": true
     }
 }

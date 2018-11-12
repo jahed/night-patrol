@@ -1,4 +1,3 @@
-import test from 'ava'
 import path from 'path'
 import { parse } from './suitesParser'
 
@@ -19,10 +18,10 @@ const tree = {
     }
 }
 
-test('should flatten test tree', t => {
+test('should flatten test tree', () => {
     const result = parse(tree)
 
-    t.deepEqual(result, {
+    expect(result).toEqual({
         [`leftDrawer${path.sep}openClose`]: [
             'should open left drawer',
             'should close left drawer'

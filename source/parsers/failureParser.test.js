@@ -1,29 +1,28 @@
-import test from 'ava'
 import fs from 'fs'
 import path from 'path'
 import { splitLines, parseSuiteName, parse } from './failureParser'
 
 const failure = fs.readFileSync(path.resolve('test/data/failure-output.txt')).toString()
 
-test('should split lines', t => {
+test('should split lines', () => {
     const result = splitLines(failure)
-    t.is(result.length, 32)
+    expect(result.length).toEqual(32)
 })
 
-test('should parse suite names', t => {
+test('should parse suite names', () => {
     const result = parseSuiteName(splitLines(failure)).value()
-    t.is(result.length, 6)
+    expect(result.length).toEqual(6)
 
     result.forEach(r => {
-        t.is(r.suiteName, 'leftDrawer')
+        expect(r.suiteName).toEqual('leftDrawer')
     })
 })
 
-test('should parse failures', t => {
+test('should parse failures', () => {
     const result = parse(failure)
     const expectedName = `${path.sep}leftDrawer: "should open and close left drawer"`
 
-    t.deepEqual(result, {
+    expect(result).toEqual({
         [expectedName]: {
             line: '   - should open and close left drawer (7.337s)',
             name: expectedName,
