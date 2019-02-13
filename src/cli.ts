@@ -13,6 +13,7 @@ import {
 } from './actions/config'
 import { runFailedTestByName, runTests } from './actions/nightwatch'
 import { getDelimiter } from './selectors/getDelimiter'
+import { getTestFailures } from './selectors/getTestFailures'
 import store from './store'
 import * as templates from './templates'
 import { PackageJSON } from './types'
@@ -31,8 +32,6 @@ const clearCommands = (vorpal: Vorpal) => {
     .filter(command => !GLOBAL_COMMANDS.includes(command._name)) // eslint-disable-line no-underscore-dangle
     .forEach(command => command.remove())
 }
-
-const getLastFailedTestNames = () => Object.keys(store.getState().testFailures)
 
 const suiteCLI = (suiteName: string, testNames: string[]) => {
   return (vorpal: Vorpal) => {
@@ -126,7 +125,7 @@ const rootCLI = (): Vorpal.Extension => vorpal => {
 const globalCLI = (): Vorpal.Extension => vorpal => [
   vorpal.command('failures list', 'List all tests that failed in the previous run')
     .action(() => {
-      const testChoices = getLastFailedTestNames()
+      const testChoices = getTestFailures(store.getState())
       if (testChoices.length === 0) {
         vorpal.log('No tests failed on the last run.')
         return Promise.resolve()
@@ -138,7 +137,7 @@ const globalCLI = (): Vorpal.Extension => vorpal => [
 
   vorpal.command('failures run', 'Run all tests that failed in the previous run')
     .action(function failuresRun () {
-      const testChoices = getLastFailedTestNames()
+      const testChoices = getTestFailures(store.getState())
       if (testChoices.length === 0) {
         vorpal.log('No tests failed on the last run.')
         return Promise.resolve()
