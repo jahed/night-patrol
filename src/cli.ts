@@ -13,9 +13,11 @@ import {
 } from './actions/config'
 import { runFailedTestByName, runTests } from './actions/nightwatch'
 import { getDelimiter } from './selectors/getDelimiter'
+import { getEnvironments } from './selectors/getEnvironments'
 import { getTestCases } from './selectors/getTestCases'
 import { getTestFailures } from './selectors/getTestFailures'
 import { getTestSuites } from './selectors/getTestSuites'
+import { hasEnvironment } from './selectors/hasEnvironment'
 import store from './store'
 import * as templates from './templates'
 import { PackageJSON } from './types'
@@ -156,10 +158,10 @@ const globalCLI = (): Vorpal.Extension => vorpal => [
 
   vorpal.command('env <env>', 'Change current environment')
     .autocomplete({
-      data: () => Object.keys(store.getState().config.environments)
+      data: () => getEnvironments(store.getState())
     })
     .action(({ env: chosenEnv }) => {
-      if (!store.getState().config.environments[chosenEnv]) {
+      if (!hasEnvironment(store.getState(), chosenEnv)) {
         vorpal.log(`Unknown env: "${chosenEnv}"`)
         return Promise.resolve()
       }
