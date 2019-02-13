@@ -22,7 +22,7 @@ declare module 'vorpal' {
 
     exec (command: string): Promise<{}>
 
-    execSync (command: string): Promise<{}>
+    execSync (command: string): {}
 
     log (value: string, ...values: string[]): this
 
