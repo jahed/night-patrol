@@ -13,7 +13,9 @@ import {
 } from './actions/config'
 import { runFailedTestByName, runTests } from './actions/nightwatch'
 import { getDelimiter } from './selectors/getDelimiter'
+import { getTestCases } from './selectors/getTestCases'
 import { getTestFailures } from './selectors/getTestFailures'
+import { getTestSuites } from './selectors/getTestSuites'
 import store from './store'
 import * as templates from './templates'
 import { PackageJSON } from './types'
@@ -81,23 +83,21 @@ const suiteCLI = (suiteName: string, testNames: string[]) => {
 }
 
 const rootCLI = (): Vorpal.Extension => vorpal => {
-  const { config: { suites } } = store.getState()
-
   store.dispatch(clearCurrentSuite())
 
   const commands = [
     vorpal.command('run [suite]', 'Run all suites or just one')
       .autocomplete({
-        data: () => Object.keys(suites)
+        data: () => getTestSuites(store.getState())
       })
       .action(({ suite: suiteName }) => store.dispatch(runTests({ suite: suiteName }))),
 
     vorpal.command('suite <suite>', 'Switch to a suite')
       .autocomplete({
-        data: () => Object.keys(suites)
+        data: () => getTestSuites(store.getState())
       })
       .action(({ suite: suiteName }) => {
-        const testNames = suites[suiteName]
+        const testNames = getTestCases(store.getState(), suiteName)
         if (!testNames) {
           vorpal.log(`Unknown suite "${suiteName}"`)
           return Promise.resolve()
