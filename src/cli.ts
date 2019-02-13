@@ -173,7 +173,8 @@ const globalCLI = (): Vorpal.Extension => vorpal => [
   vorpal.command('internals [path]', 'View the internal Night Patrol state')
     .action(({ path: statePath }) => {
       const state = store.getState()
-      console.log(JSON.stringify(statePath ? _.get(state, statePath) : state, null, 2))
+      const internals = statePath ? _.get(state, statePath) : state
+      vorpal.log(JSON.stringify(internals, null, 2))
       return Promise.resolve()
     })
 ]
