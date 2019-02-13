@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import fs from 'fs'
 import { Questions } from 'inquirer'
 import _ from 'lodash'
@@ -11,6 +12,7 @@ import {
   setCurrentSuite
 } from './actions/config'
 import { runFailedTestByName, runTests } from './actions/nightwatch'
+import { getDelimiter } from './selectors/getDelimiter'
 import store from './store'
 import * as templates from './templates'
 import { PackageJSON } from './types'
@@ -36,7 +38,6 @@ const suiteCLI = (suiteName: string, testNames: string[]) => {
   return (vorpal: Vorpal) => {
     store.dispatch(setCurrentSuite({ suite: suiteName }))
 
-    const chalk = vorpal.chalk
     const realSpace = ' '
     const alternativeSpace = ' '
 
@@ -81,7 +82,6 @@ const suiteCLI = (suiteName: string, testNames: string[]) => {
 }
 
 const rootCLI = (): Vorpal.Extension => vorpal => {
-  const chalk = vorpal.chalk
   const { config: { suites } } = store.getState()
 
   store.dispatch(clearCurrentSuite())
@@ -189,25 +189,7 @@ rootVorpal.history(`${packageJson.name}-${packageJson.version}`)
 useExtensions(rootVorpal, [globalCLI(), rootCLI()])
 
 const reloadDelimiter = (vorpal: Vorpal) => {
-  const {
-    config: {
-      currentSuite,
-      currentEnvironment
-    },
-    testFailures
-  } = store.getState()
-  const chalk = vorpal.chalk
-
-  const environmentParts = [chalk.cyan(currentEnvironment)]
-  const failureCount = _.size(testFailures)
-  if (failureCount > 0) {
-    environmentParts.push(chalk.red(chalk.bold(`×${failureCount}`)))
-  }
-
-  const environment = chalk.magenta(`nightwatch(${environmentParts.join('|')}):`)
-  const location = chalk.yellow(`${path.sep}${currentSuite || ''}`)
-
-  const delimiter = `${environment}${location} $`
+  const delimiter = getDelimiter(store.getState())
   vorpal.delimiter(delimiter) // Future delimiters
   vorpal.ui.delimiter(delimiter) // Current delimiter
 }

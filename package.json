@@ -39,11 +39,13 @@
     "nightwatch": "^1.0.0"
   },
   "dependencies": {
+    "chalk": "2.4.2",
     "lodash": "4.17.11",
     "minimist": "1.2.0",
     "redux": "4.0.1",
     "redux-thunk": "2.3.0",
     "require-dir": "1.2.0",
+    "reselect": "4.0.0",
     "shelljs": "0.8.3",
     "stripcolorcodes": "0.1.0",
     "vorpal": "1.12.0"
