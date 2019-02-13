@@ -1,6 +1,6 @@
 {
   "name": "night-patrol",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Interactive CLI for Nightwatch Test Runner",
   "author": "Jahed Ahmed",
   "license": "MIT",
