@@ -14,16 +14,11 @@ const initialState = {
 
 const nightwatch: Reducer<NightwatchState> = (state = initialState, action) => {
   switch (action.type) {
-    case Action.SET_NIGHTWATCH_EXECUTABLE: {
-      return {
-        ...state,
-        executablePath: action.payload.executablePath
-      }
-    }
     case Action.SET_NIGHTWATCH_CONFIG: {
       return {
         ...state,
         configPath: action.payload.configPath,
+        executablePath: action.payload.executablePath,
         suiteDirectories: action.payload.suiteDirectories,
         suites: action.payload.suites,
         environments: action.payload.environments,

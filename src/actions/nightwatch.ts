@@ -3,6 +3,7 @@ import Path from 'path'
 import { AnyAction } from 'redux'
 import { ThunkAction } from 'redux-thunk'
 import requireDir from 'require-dir'
+import * as nightwatchHelper from '../helpers/nightwatchHelper'
 import * as suitesParser from '../parsers/suitesParser'
 import * as shell from '../shell'
 import { NightPatrolState, Suites } from '../types'
@@ -14,7 +15,6 @@ import {
 } from './testFailures'
 
 export const Action = {
-  SET_NIGHTWATCH_EXECUTABLE: '@@night-patrol/nightwatch/SET_NIGHTWATCH_EXECUTABLE',
   SET_NIGHTWATCH_CONFIG: '@@night-patrol/nightwatch/SET_NIGHTWATCH_CONFIG',
   SET_CURRENT_SUITE: '@@night-patrol/nightwatch/SET_CURRENT_SUITE',
   CLEAR_CURRENT_SUITE: '@@night-patrol/nightwatch/CLEAR_CURRENT_SUITE',
@@ -23,13 +23,6 @@ export const Action = {
   RUN_NIGHTWATCH_SUCCESS: '@@night-patrol/nightwatch/RUN_NIGHTWATCH_SUCCESS',
   RUN_NIGHTWATCH_FAILURE: '@@night-patrol/nightwatch/RUN_NIGHTWATCH_FAILURE'
 }
-
-export const setNightwatchExecutable = ({ path }: { path: string }) => ({
-  type: Action.SET_NIGHTWATCH_EXECUTABLE,
-  payload: {
-    executablePath: path
-  }
-})
 
 const getSuites = (suiteDirectories: string[]): Suites => (
   suiteDirectories.reduce((suites: Suites, srcDir) => {
@@ -45,7 +38,26 @@ const getSuites = (suiteDirectories: string[]): Suites => (
   }, {})
 )
 
-export const setNightwatchConfig = ({ path: configPath }: { path: string }) => {
+type InputConfigPaths = {
+  configPath?: string,
+  executablePath?: string
+}
+
+type ConfigPaths = {
+  configPath: string,
+  executablePath: string
+}
+
+const parseConfigPaths = ({
+  configPath = './nightwatch.config.js',
+  executablePath = nightwatchHelper.getDefaultNightwatchExec()
+}: InputConfigPaths): ConfigPaths => ({
+  configPath: Path.resolve(configPath),
+  executablePath: Path.resolve(executablePath)
+})
+
+export const setNightwatchConfig = (configPaths: InputConfigPaths) => {
+  const { configPath, executablePath } = parseConfigPaths(configPaths)
   const config = require(configPath)
   const environments = config.test_settings
 
@@ -67,6 +79,7 @@ export const setNightwatchConfig = ({ path: configPath }: { path: string }) => {
     type: Action.SET_NIGHTWATCH_CONFIG,
     payload: {
       configPath,
+      executablePath,
       suiteDirectories,
       suites: getSuites(suiteDirectories),
       environments,

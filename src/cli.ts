@@ -10,10 +10,8 @@ import {
   runNightWatch,
   setCurrentEnvironment,
   setCurrentSuite,
-  setNightwatchConfig,
-  setNightwatchExecutable
+  setNightwatchConfig
 } from './actions/nightwatch'
-import * as nightwatchHelper from './helpers/nightwatchHelper'
 import store from './store'
 import * as templates from './templates'
 import { PackageJSON } from './types'
@@ -182,18 +180,9 @@ const globalCLI = (): Vorpal.Extension => vorpal => [
 
 const argv = minimist(process.argv.slice(2))
 
-if (!argv.config) {
-  console.error('config is required\n')
-  console.error('Usage:\n\t$ night-patrol --config <path-to-nightwatch-config>')
-  process.exit(1)
-}
-
-store.dispatch(setNightwatchExecutable({
-  path: argv.nightwatch || nightwatchHelper.getDefaultNightwatchExec()
-}))
-
 store.dispatch(setNightwatchConfig({
-  path: path.resolve(argv.config)
+  configPath: argv.config,
+  executablePath: argv.nightwatch
 }))
 
 const rootVorpal = new Vorpal()
