@@ -8,6 +8,8 @@ const config: Reducer<Config> = (state = getDefaultConfig(), action) => {
     case Action.SET_CONFIG: {
       return {
         ...state,
+        name: action.payload.name,
+        version: action.payload.version,
         configPath: action.payload.configPath,
         executablePath: action.payload.executablePath,
         suiteDirectories: action.payload.suiteDirectories,

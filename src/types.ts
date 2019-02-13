@@ -21,6 +21,8 @@ export type ConfigOptions = {
 }
 
 export type Config = {
+  name: string,
+  version: string,
   configPath: string,
   executablePath: string,
   environments: { [name: string]: true },

@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import Path from 'path'
-import { ConfigOptions, Config } from '../types'
+import { Config, ConfigOptions } from '../types'
 import { ensureArray } from '../utils/ensureArray'
 import { getDefaultConfig } from './getDefaultConfig'
 import { getSuites } from './getSuites'
