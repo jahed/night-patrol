@@ -1,6 +1,6 @@
 # Night Patrol
 
-[![Travis](https://img.shields.io/travis/jahed/night-patrol.svg)](https://travis-ci.org/search/night-patrol)
+[![Travis](https://img.shields.io/travis/jahed/night-patrol.svg)](https://travis-ci.org/jahed/night-patrol)
 [![npm](https://img.shields.io/npm/v/night-patrol.svg)](https://www.npmjs.com/package/night-patrol)
 [![Patreon](https://img.shields.io/badge/patreon-donate-f96854.svg)](https://www.patreon.com/jahed)
 [![Liberapay](https://img.shields.io/badge/liberapay-donate-d9b113.svg)](https://liberapay.com/jahed)
