@@ -16,9 +16,9 @@ export function addTestFailures({ testFailures }) {
     }
 }
 
-export function addTestFailuresFromNightwatchOutput({ stdout }) {
+export function addTestFailuresFromNightwatchOutput({ suites, stdout }) {
     return addTestFailures({
-        testFailures: failureParser.parse(stdout)
+        testFailures: failureParser.parse({ suites, stdout })
     })
 }
 

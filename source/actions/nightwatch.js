@@ -1,5 +1,7 @@
 import Path from 'path'
 import _ from 'lodash'
+import requireDir from 'require-dir'
+import * as suitesParser from '../parsers/suitesParser'
 import * as shell from '../shell'
 import {
     addTestFailuresFromNightwatchOutput,
@@ -28,26 +30,50 @@ export function setNightwatchExecutable({ path }) {
     }
 }
 
-export function setNightwatchConfig({ path }) {
+function getSuites(suiteDirectories) {
+    return suiteDirectories
+        .reduce((acc, next) => {
+            const suites = suitesParser.parse(requireDir(next, { recurse: true }))
+            return Object
+                .keys(suites)
+                .reduce(
+                    (acc2, next2) => {
+                        // eslint-disable-next-line no-param-reassign
+                        acc2[Path.relative(process.cwd(), Path.resolve(next, next2))] = suites[next2]
+                        return acc2
+                    },
+                    acc
+                )
+        }, {})
+}
+
+export function setNightwatchConfig({ path: configPath }) {
     // eslint-disable-next-line import/no-dynamic-require,global-require
-    const config = require(path)
+    const config = require(configPath)
     const environments = config.test_settings
 
     if (_.isEmpty(environments)) {
         throw new Error('Provided Nightwatch Config has no environments (config.test_settings).')
     }
 
-    const initialEnvironment = environments.default
+    const currentEnvironment = environments.default
         ? 'default'
         : Object.keys(environments)[0]
+
+    const suiteDirectories = (
+        Array.isArray(config.src_folders)
+            ? config.src_folders
+            : [config.src_folders]
+    ).map(dir => Path.resolve(dir))
 
     return {
         type: Action.SET_NIGHTWATCH_CONFIG,
         payload: {
-            configPath: path,
-            suitesRoot: Path.resolve(config.src_folders),
-            environments: environments,
-            currentEnvironment: initialEnvironment
+            configPath,
+            suiteDirectories,
+            suites: getSuites(suiteDirectories),
+            environments,
+            currentEnvironment
         }
     }
 }
@@ -100,9 +126,9 @@ export function runNightWatch({ suite, testname }) {
         const {
             nightwatch: {
                 configPath,
-                suitesRoot,
                 executablePath,
-                currentEnvironment
+                currentEnvironment,
+                suites
             }
         } = getState()
 
@@ -112,7 +138,7 @@ export function runNightWatch({ suite, testname }) {
         }
 
         if (suite) {
-            nightWatchArgs.test = Path.resolve(suitesRoot, `${suite}.js`)
+            nightWatchArgs.test = Path.resolve(`${suite}.js`)
         }
 
         if (testname) {
@@ -140,7 +166,7 @@ export function runNightWatch({ suite, testname }) {
                 dispatch(runNightWatchSuccess())
             })
             .catch(({ stdout }) => {
-                dispatch(addTestFailuresFromNightwatchOutput({ stdout }))
+                dispatch(addTestFailuresFromNightwatchOutput({ suites, stdout }))
                 dispatch(runNightWatchFailure())
             })
     }

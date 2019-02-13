@@ -65,6 +65,9 @@
     "rimraf": "^2.6.2",
     "standard-version": "^4.4.0"
   },
+  "peerDependencies": {
+    "nightwatch": "^1.0.0"
+  },
   "ava": {
     "require": "babel-register",
     "babel": "inherit"

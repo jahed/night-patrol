@@ -15,9 +15,10 @@ export default function testFailures(state = initialState, action) {
             return _.omitBy(state, failure => failure.suiteName === action.payload.suiteName)
         }
         case Action.REMOVE_TEST_FAILURE: {
-            return _.omitBy(state, failure => failure.suiteName === action.payload.suiteName
-                && failure.testName === action.payload.testName
-            )
+            return _.omitBy(state, failure => (
+                failure.suiteName === action.payload.suiteName &&
+                failure.testName === action.payload.testName
+            ))
         }
         case Action.CLEAR_TEST_FAILURES: {
             return initialState

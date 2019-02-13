@@ -2,32 +2,47 @@ import fs from 'fs'
 import path from 'path'
 import { splitLines, parseSuiteName, parse } from './failureParser'
 
-const failure = fs.readFileSync(path.resolve('test/data/failure-output.txt')).toString()
+const stdout = fs.readFileSync(path.resolve('test/data/failure-output.txt')).toString()
 
 test('should split lines', () => {
-    const result = splitLines(failure)
-    expect(result.length).toEqual(32)
+    const result = splitLines(stdout)
+    expect(result.length).toEqual(37)
 })
 
 test('should parse suite names', () => {
-    const result = parseSuiteName(splitLines(failure)).value()
-    expect(result.length).toEqual(6)
+    const expectedSuiteName = `tests${path.sep}scenarios${path.sep}leftDrawer`
+    const suites = {
+        'something/not/expected': {},
+        [expectedSuiteName]: {},
+        'something/else': {}
+    }
+
+    const result = parseSuiteName({ suites, lines: splitLines(stdout) }).value()
+    expect(result.length).toEqual(7)
 
     result.forEach(r => {
-        expect(r.suiteName).toEqual('leftDrawer')
+        expect(r.suiteName).toEqual(expectedSuiteName)
     })
 })
 
 test('should parse failures', () => {
-    const result = parse(failure)
-    const expectedName = `${path.sep}leftDrawer: "should open and close left drawer"`
+    const expectedSuiteName = `tests${path.sep}scenarios${path.sep}leftDrawer`
+    const expectedTestName = 'starts open on desktop'
+    const expectedName = `${expectedSuiteName}: "${expectedTestName}"`
+    const suites = {
+        'something/not/expected': {},
+        [expectedSuiteName]: {},
+        'something/else': {}
+    }
+
+    const result = parse({ suites, stdout })
 
     expect(result).toEqual({
         [expectedName]: {
-            line: '   - should open and close left drawer (7.337s)',
+            line: ` – ${expectedTestName} (5.222s)`,
             name: expectedName,
-            suiteName: 'leftDrawer',
-            testName: 'should open and close left drawer'
+            suiteName: expectedSuiteName,
+            testName: expectedTestName
         }
     })
 })

@@ -1,10 +1,8 @@
 import Vorpal from 'vorpal'
-import requireDir from 'require-dir'
 import _ from 'lodash'
 import minimist from 'minimist'
 import path from 'path'
 import packageJson from '../package.json'
-import * as suitesParser from './parsers/suitesParser'
 import * as templates from './templates'
 import * as nightwatchHelper from './helpers/nightwatchHelper'
 import store from './store'
@@ -33,10 +31,6 @@ function clearCommands(vorpal) {
 
 function getLastFailedTestNames() {
     return Object.keys(getState().testFailures)
-}
-
-function getSuites(suitesRoot) {
-    return suitesParser.parse(requireDir(suitesRoot, { recurse: true }))
 }
 
 function suiteCLI(suiteName, testNames) {
@@ -90,7 +84,7 @@ function suiteCLI(suiteName, testNames) {
 function rootCLI() {
     return vorpal => {
         const chalk = vorpal.chalk
-        const suites = getSuites(getState().nightwatch.suitesRoot)
+        const { nightwatch: { suites } } = getState()
 
         dispatch(clearCurrentSuite())
 

@@ -1,31 +1,36 @@
-Starting selenium server... started - PID:  8284
+[Scenarios/Left Drawer] Test Suite
+==================================
+Running:  starts open on desktop
 
-[Left Drawer] Test Suite
-============================
-
-Running:  should open and close left drawer
- √ Expected element <.app-container> to be present in 1000ms - element was present in 36ms
- √ Expected element <.drawer-container> to not have attribute "class" which not contains: "active"
- × Expected element <.drawer-container> to have attribute "class" which contains: "active"  - expected "contains 'active'" but got: "drawer-container"
-    at Object.should open and close left drawer (C:\Users\Jahed\projects\frontiernav\client\tests\scenarios\leftDrawer.js:19:21)
+✖ Expected element <Element [name=@LeftDrawer]> to be present - element was not found - expected "present" but got: "not present"
+    at Object.starts open on desktop (/home/jahed/repos/frontiernav/frontiernav/tests/scenarios/leftDrawer.js:8:17)
 
 
-FAILED:  1 assertions failed and 2 passed (7.337s)
+FAILED: 1 assertions failed (5.222s)
+   Error while running "element" command: Expected element <Element [name=@LeftDrawer]> to be present - element was not found - expected "present" but got: "not present"
 
-[Load Home Page] Test Suite
-===============================
-
+[Scenarios/Home Page] Test Suite
+================================
 Running:  should load home page
- √ Expected element <.app-container> to be present in 2000ms - element was present in 28ms
 
-OK. 1 assertions passed. (5.026s)
+✔ Expected element <Element [name=@container]> to be present - element was present in 11ms
 
- _________________________________________________
+OK. 1 assertions passed. (31ms)
+Running:  heading should say "FrontierNav"
 
- TEST FAILURE:  1 assertions failed, 3 passed. (13.281s)
+✔ Expected element <Element [name=@heading]> text to equal: "FrontierNav" - condition was met in 683ms
 
- × leftDrawer
+OK. 1 assertions passed. (691ms)
 
-   - should open and close left drawer (7.337s)
-   Expected element <.drawer-container> to have attribute "class" which contains: "active"  - expected "contains 'active'" but got: "drawer-container"
-       at Object.should open and close left drawer (C:\Users\Jahed\projects\frontiernav\client\tests\scenarios\leftDrawer.js:19:21)
+OK. 2  total assertions passed. (2.93s)
+
+_________________________________________________
+
+TEST FAILURE:  1 assertions failed, 0 passed. 7.35s
+
+ ✖ scenarios/leftDrawer
+ – starts open on desktop (5.222s)
+   Expected element <Element [name=@LeftDrawer]> to be present - element was not found - expected "present" but got: "not present"
+       at Object.starts open on desktop (/home/jahed/repos/frontiernav/frontiernav/tests/scenarios/leftDrawer.js:8:17)
+   SKIPPED:
+   - closes and opens
