@@ -19,9 +19,9 @@
     "prebuild": "rimraf dist && mkdir dist",
     "build": "BABEL_ENV=build babel --out-dir dist source",
     "watch": "yarn build --watch",
-    "push:git": "git push && git push --tags",
-    "prepublishOnly": "yarn test && yarn build && standard-version",
-    "postpublish": "yarn push:git"
+    "ready": "yarn test && yarn build",
+    "push": "git push --follow-tags",
+    "deploy": "yarn ready && standard-version && yarn publish && yarn push"
   },
   "repository": {
     "type": "git",
