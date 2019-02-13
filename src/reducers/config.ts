@@ -1,20 +1,11 @@
 import { Reducer } from 'redux'
-import { Action } from '../actions/nightwatch'
-import { getDefaultNightwatchExec } from '../helpers/nightwatchHelper'
-import { NightwatchState } from '../types'
+import { Action } from '../actions/config'
+import { getDefaultConfig } from '../config/getDefaultConfig'
+import { Config } from '../types'
 
-const initialState = {
-  configPath: 'nightwatch.config.js',
-  executablePath: getDefaultNightwatchExec(),
-  environments: {},
-  currentEnvironment: 'default',
-  suites: {},
-  currentSuite: undefined
-}
-
-const nightwatch: Reducer<NightwatchState> = (state = initialState, action) => {
+const config: Reducer<Config> = (state = getDefaultConfig(), action) => {
   switch (action.type) {
-    case Action.SET_NIGHTWATCH_CONFIG: {
+    case Action.SET_CONFIG: {
       return {
         ...state,
         configPath: action.payload.configPath,
@@ -23,7 +14,7 @@ const nightwatch: Reducer<NightwatchState> = (state = initialState, action) => {
         suites: action.payload.suites,
         environments: action.payload.environments,
         currentEnvironment: action.payload.currentEnvironment,
-        currentSuite: undefined
+        currentSuite: action.payload.currentSuite
       }
     }
     case Action.SET_CURRENT_SUITE: {
@@ -50,4 +41,4 @@ const nightwatch: Reducer<NightwatchState> = (state = initialState, action) => {
   }
 }
 
-export default nightwatch
+export default config

@@ -1,12 +1,8 @@
-import _ from 'lodash'
 import Path from 'path'
 import { AnyAction } from 'redux'
 import { ThunkAction } from 'redux-thunk'
-import requireDir from 'require-dir'
-import * as nightwatchHelper from '../helpers/nightwatchHelper'
-import * as suitesParser from '../parsers/suitesParser'
 import * as shell from '../shell'
-import { NightPatrolState, Suites } from '../types'
+import { State } from '../types'
 import {
   addTestFailuresFromNightwatchOutput,
   clearTestFailures,
@@ -15,96 +11,10 @@ import {
 } from './testFailures'
 
 export const Action = {
-  SET_NIGHTWATCH_CONFIG: '@@night-patrol/nightwatch/SET_NIGHTWATCH_CONFIG',
-  SET_CURRENT_SUITE: '@@night-patrol/nightwatch/SET_CURRENT_SUITE',
-  CLEAR_CURRENT_SUITE: '@@night-patrol/nightwatch/CLEAR_CURRENT_SUITE',
-  SET_CURRENT_ENVIRONMENT: '@@night-patrol/nightwatch/SET_CURRENT_ENVIRONMENT',
   RUN_NIGHTWATCH_START: '@@night-patrol/nightwatch/RUN_NIGHTWATCH_START',
   RUN_NIGHTWATCH_SUCCESS: '@@night-patrol/nightwatch/RUN_NIGHTWATCH_SUCCESS',
   RUN_NIGHTWATCH_FAILURE: '@@night-patrol/nightwatch/RUN_NIGHTWATCH_FAILURE'
 }
-
-const getSuites = (suiteDirectories: string[]): Suites => (
-  suiteDirectories.reduce((suites: Suites, srcDir) => {
-    const srcSuites = suitesParser.parse(requireDir(srcDir, { recurse: true }))
-    Object.keys(srcSuites).forEach(srcSuiteName => {
-      const suiteName = Path.relative(
-        process.cwd(),
-        Path.resolve(srcDir, srcSuiteName)
-      )
-      suites[suiteName] = srcSuites[srcSuiteName]
-    })
-    return suites
-  }, {})
-)
-
-type InputConfigPaths = {
-  configPath?: string,
-  executablePath?: string
-}
-
-type ConfigPaths = {
-  configPath: string,
-  executablePath: string
-}
-
-const parseConfigPaths = ({
-  configPath = './nightwatch.config.js',
-  executablePath = nightwatchHelper.getDefaultNightwatchExec()
-}: InputConfigPaths): ConfigPaths => ({
-  configPath: Path.resolve(configPath),
-  executablePath: Path.resolve(executablePath)
-})
-
-export const setNightwatchConfig = (configPaths: InputConfigPaths) => {
-  const { configPath, executablePath } = parseConfigPaths(configPaths)
-  const config = require(configPath)
-  const environments = config.test_settings
-
-  if (_.isEmpty(environments)) {
-    throw new Error('Provided Nightwatch Config has no environments (config.test_settings).')
-  }
-
-  const currentEnvironment = environments.default
-    ? 'default'
-    : Object.keys(environments)[0]
-
-  const suiteDirectories = (
-    Array.isArray(config.src_folders)
-      ? config.src_folders
-      : [config.src_folders]
-  ).map((dir: string) => Path.resolve(dir))
-
-  return {
-    type: Action.SET_NIGHTWATCH_CONFIG,
-    payload: {
-      configPath,
-      executablePath,
-      suiteDirectories,
-      suites: getSuites(suiteDirectories),
-      environments,
-      currentEnvironment
-    }
-  }
-}
-
-export const setCurrentSuite = ({ suite }: { suite: string }) => ({
-  type: Action.SET_CURRENT_SUITE,
-  payload: {
-    currentSuite: suite
-  }
-})
-
-export const clearCurrentSuite = () => ({
-  type: Action.CLEAR_CURRENT_SUITE
-})
-
-export const setCurrentEnvironment = ({ environment }: { environment: string }) => ({
-  type: Action.SET_CURRENT_ENVIRONMENT,
-  payload: {
-    currentEnvironment: environment
-  }
-})
 
 export type NightWatchArgs = {
   config: string,
@@ -126,12 +36,12 @@ const runNightWatchFailure = () => ({
   type: Action.RUN_NIGHTWATCH_FAILURE
 })
 
-export type RunNightWatchAction = ThunkAction<Promise<void>, NightPatrolState, any, AnyAction>
+export type RunTests = ThunkAction<Promise<void>, State, any, AnyAction>
 
-export const runNightWatch = ({ suite, testname }: { suite?: string, testname?: string }): RunNightWatchAction => (
+export const runTests = ({ suite, testname }: { suite?: string, testname?: string }): RunTests => (
   (dispatch, getState) => {
     const {
-      nightwatch: {
+      config: {
         configPath,
         executablePath,
         currentEnvironment,
@@ -179,10 +89,10 @@ export const runNightWatch = ({ suite, testname }: { suite?: string, testname?: 
   }
 )
 
-export const runFailedTestByName = (name: string): RunNightWatchAction => (
+export const runFailedTestByName = (name: string): RunTests => (
   (dispatch, getState) => {
     const lastFailedTest = getState().testFailures[name]
-    return dispatch(runNightWatch({
+    return dispatch(runTests({
       suite: lastFailedTest.suiteName,
       testname: lastFailedTest.testName
     }))

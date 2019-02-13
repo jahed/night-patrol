@@ -15,23 +15,29 @@ export type Suites = {
   [suiteName: string]: string[]
 }
 
-export type NightwatchState = {
+export type ConfigOptions = {
+  configPath?: string,
+  executablePath?: string
+}
+
+export type Config = {
   configPath: string,
   executablePath: string,
-  environments: { [name: string]: any },
+  environments: { [name: string]: true },
   currentEnvironment: string,
+  suiteDirectories: string[],
   suites: Suites,
   currentSuite?: string
 }
 
-export type ActionsState = {
+export type ActionsLog = {
   [datetime: string]: AnyAction
 }
 
-export type NightPatrolState = {
-  nightwatch: NightwatchState,
+export type State = {
+  config: Config,
   testFailures: TestFailuresByName,
-  actions: ActionsState
+  actions: ActionsLog
 }
 
 export type PackageJSON = {

@@ -6,12 +6,11 @@ import path from 'path'
 import Vorpal from 'vorpal'
 import {
   clearCurrentSuite,
-  runFailedTestByName,
-  runNightWatch,
+  setConfig,
   setCurrentEnvironment,
-  setCurrentSuite,
-  setNightwatchConfig
-} from './actions/nightwatch'
+  setCurrentSuite
+} from './actions/config'
+import { runFailedTestByName, runTests } from './actions/nightwatch'
 import store from './store'
 import * as templates from './templates'
 import { PackageJSON } from './types'
@@ -54,7 +53,7 @@ const suiteCLI = (suiteName: string, testNames: string[]) => {
             ? formattedTestName.replace(new RegExp(alternativeSpace, 'g'), realSpace)
             : undefined
 
-          return store.dispatch(runNightWatch({
+          return store.dispatch(runTests({
             suite: suiteName,
             testname: testName
           }))
@@ -83,7 +82,7 @@ const suiteCLI = (suiteName: string, testNames: string[]) => {
 
 const rootCLI = (): Vorpal.Extension => vorpal => {
   const chalk = vorpal.chalk
-  const { nightwatch: { suites } } = store.getState()
+  const { config: { suites } } = store.getState()
 
   store.dispatch(clearCurrentSuite())
 
@@ -92,7 +91,7 @@ const rootCLI = (): Vorpal.Extension => vorpal => {
       .autocomplete({
         data: () => Object.keys(suites)
       })
-      .action(({ suite: suiteName }) => store.dispatch(runNightWatch({ suite: suiteName }))),
+      .action(({ suite: suiteName }) => store.dispatch(runTests({ suite: suiteName }))),
 
     vorpal.command('suite <suite>', 'Switch to a suite')
       .autocomplete({
@@ -158,10 +157,10 @@ const globalCLI = (): Vorpal.Extension => vorpal => [
 
   vorpal.command('env <env>', 'Change current environment')
     .autocomplete({
-      data: () => Object.keys(store.getState().nightwatch.environments)
+      data: () => Object.keys(store.getState().config.environments)
     })
     .action(({ env: chosenEnv }) => {
-      if (!store.getState().nightwatch.environments[chosenEnv]) {
+      if (!store.getState().config.environments[chosenEnv]) {
         vorpal.log(`Unknown env: "${chosenEnv}"`)
         return Promise.resolve()
       }
@@ -180,7 +179,7 @@ const globalCLI = (): Vorpal.Extension => vorpal => [
 
 const argv = minimist(process.argv.slice(2))
 
-store.dispatch(setNightwatchConfig({
+store.dispatch(setConfig({
   configPath: argv.config,
   executablePath: argv.nightwatch
 }))
@@ -191,7 +190,7 @@ useExtensions(rootVorpal, [globalCLI(), rootCLI()])
 
 const reloadDelimiter = (vorpal: Vorpal) => {
   const {
-    nightwatch: {
+    config: {
       currentSuite,
       currentEnvironment
     },
