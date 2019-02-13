@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/jahed/night-patrol/compare/v1.0.2...v2.0.0) (2019-02-13)
+
+
+### Bug Fixes
+
+* **cli:** make bin/cli.js executable ([e5b83a3](https://github.com/jahed/night-patrol/commit/e5b83a3))
+
+
+### Features
+
+* support nightwatch@1.0 and src_folders array ([8288220](https://github.com/jahed/night-patrol/commit/8288220)), closes [#2](https://github.com/jahed/night-patrol/issues/2)
+
+
+### BREAKING CHANGES
+
+* nightwatch versions below 1.0 are no longer supported.
+
+
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/jahed/night-patrol/compare/v1.0.1...v1.0.2) (2018-11-12)
 
