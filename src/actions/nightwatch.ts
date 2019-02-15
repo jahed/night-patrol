@@ -1,7 +1,6 @@
 import Path from 'path'
 import { AnyAction } from 'redux'
 import { ThunkAction } from 'redux-thunk'
-import * as shell from '../shell'
 import { State } from '../types'
 import {
   addTestFailuresFromNightwatchOutput,
@@ -9,6 +8,8 @@ import {
   clearTestFailuresForSuite,
   removeTestFailure
 } from './testFailures'
+import { exec } from '../shell/exec'
+import { command } from '../shell/command'
 
 export const Action = {
   RUN_NIGHTWATCH_START: '@@night-patrol/nightwatch/RUN_NIGHTWATCH_START',
@@ -64,7 +65,7 @@ export const runTests = ({ suite, testname }: { suite?: string, testname?: strin
 
     dispatch(runNightWatchStart(nightWatchArgs))
 
-    return shell.exec(shell.createCommandString(executablePath, nightWatchArgs))
+    return exec(command(executablePath, nightWatchArgs))
       .then(() => {
         if (suite && testname) {
           return dispatch(removeTestFailure({

@@ -1,7 +1,7 @@
-import { createCommandString } from './shell'
+import { command } from './command'
 
 test('should create a command string of args', () => {
-  const result = createCommandString('somecommand', {
+  const result = command('somecommand', {
     'arg-1': 'value1',
     'arg-2': undefined,
     'arg-3': 'value3'
