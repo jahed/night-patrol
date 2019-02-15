@@ -4,13 +4,13 @@ import { runTests } from '../actions/nightwatch'
 import { getHeader } from '../selectors/getHeader'
 import { getTestCases } from '../selectors/getTestCases'
 import { getTestSuites } from '../selectors/getTestSuites'
-import store from '../store'
+import { Store } from '../types'
 import { clearCommands } from './clearCommands'
 import { createCommonExtension } from './createCommonExtension'
 import { createSuiteExtension } from './createSuiteExtension'
 import { useExtensions } from './useExtensions'
 
-const createRootExtension = (): Vorpal.Extension => vorpal => {
+const createRootExtension = (store: Store): Vorpal.Extension => vorpal => {
   store.dispatch(clearCurrentSuite())
 
   const commands = [
@@ -33,8 +33,8 @@ const createRootExtension = (): Vorpal.Extension => vorpal => {
 
         clearCommands(vorpal)
         useExtensions(vorpal, [
-          createCommonExtension(),
-          createSuiteExtension(suiteName, testNames)
+          createCommonExtension(store),
+          createSuiteExtension(store, suiteName, testNames)
         ])
 
         return Promise.resolve()

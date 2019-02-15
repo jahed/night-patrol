@@ -5,10 +5,10 @@ import { runFailedTestByName } from '../actions/nightwatch'
 import { getEnvironments } from '../selectors/getEnvironments'
 import { getTestFailures } from '../selectors/getTestFailures'
 import { hasEnvironment } from '../selectors/hasEnvironment'
-import store from '../store'
 import _ from 'lodash'
+import { Store } from '../types'
 
-const createCommonExtension = (): Vorpal.Extension => vorpal => [
+const createCommonExtension = (store: Store): Vorpal.Extension => vorpal => [
   vorpal.command('failures list', 'List all tests that failed in the previous run')
     .action(() => {
       const testChoices = getTestFailures(store.getState())

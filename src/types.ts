@@ -1,4 +1,5 @@
-import { AnyAction } from 'redux'
+import { Store as ReduxStore, AnyAction } from 'redux'
+import { ThunkDispatch } from 'redux-thunk'
 
 export type TestFailure = {
   suiteName: string,
@@ -35,6 +36,11 @@ export type Config = {
 export type ActionsLog = {
   [datetime: string]: AnyAction
 }
+
+export type Store = (
+  ReduxStore<State, AnyAction> &
+  { dispatch: ThunkDispatch<State, {}, AnyAction> }
+)
 
 export type State = {
   config: Config,

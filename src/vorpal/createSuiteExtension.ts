@@ -4,13 +4,13 @@ import Vorpal from 'vorpal'
 import { setCurrentSuite } from '../actions/config'
 import { runTests } from '../actions/nightwatch'
 import { header } from '../header'
-import store from '../store'
+import { Store } from '../types'
 import { clearCommands } from './clearCommands'
 import { createCommonExtension } from './createCommonExtension'
 import { createRootExtension } from './createRootExtension'
 import { useExtensions } from './useExtensions'
 
-const createSuiteExtension = (suiteName: string, testNames: string[]) => {
+const createSuiteExtension = (store: Store, suiteName: string, testNames: string[]) => {
   return (vorpal: Vorpal) => {
     store.dispatch(setCurrentSuite({ suite: suiteName }))
 
@@ -40,8 +40,8 @@ const createSuiteExtension = (suiteName: string, testNames: string[]) => {
         .action(() => {
           clearCommands(vorpal)
           useExtensions(vorpal, [
-            createCommonExtension(),
-            createRootExtension()
+            createCommonExtension(store),
+            createRootExtension(store)
           ])
           return Promise.resolve()
         })
