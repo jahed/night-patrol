@@ -1,10 +1,9 @@
 import chalk from 'chalk'
-import _ from 'lodash'
 import Vorpal from 'vorpal'
 import { setCurrentSuite } from '../actions/config'
 import { runTests } from '../actions/nightwatch'
-import { header } from '../header'
 import { Store } from '../types'
+import { header } from '../utils/header'
 import { clearCommands } from './clearCommands'
 import { createCommonExtension } from './createCommonExtension'
 import { createRootExtension } from './createRootExtension'
@@ -48,7 +47,7 @@ const createSuiteExtension = (store: Store, suiteName: string, testNames: string
     ]
 
     vorpal.log(chalk.cyan(header({
-      heading: _.words(suiteName).map(word => _.upperFirst(word)).join(' '),
+      heading: `SUITE: ${suiteName}`,
       body: 'Remember, you will need to restart the session to refresh the autocomplete.'
     })))
     vorpal.execSync('help')

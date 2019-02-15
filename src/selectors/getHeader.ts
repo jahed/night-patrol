@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { createSelector, Selector } from 'reselect'
-import { header } from '../header'
 import { State } from '../types'
+import { header } from '../utils/header'
 
 const getHeader: Selector<State, string> = createSelector(
   state => state.config.version,
