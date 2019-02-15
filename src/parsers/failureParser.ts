@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import stripcolorcodes from 'stripcolorcodes'
-import { Suites, TestFailure, TestFailuresByName } from '../types'
+import { Suites, TestFailuresBySuite } from '../types'
 
 export const splitLines = (stdout: string) => (
   stripcolorcodes(stdout).split('\n')
@@ -27,26 +27,19 @@ export const parseSuiteName = ({ suites, lines }: { suites: Suites, lines: strin
     .filter(r => !!r.suiteName)
 }
 
-const hasCompleteInfo = (r?: any): r is TestFailure => (
-  !!r.suiteName &&
-  !!r.testName &&
-  !!r.name
-)
-
-export const parse = ({ suites, stdout }: { suites: Suites, stdout: string }): TestFailuresByName => (
+export const parse = ({ suites, stdout }: { suites: Suites, stdout: string }): TestFailuresBySuite => (
   parseSuiteName({ suites, lines: splitLines(stdout) })
     .map(r => {
       const match = /\s+–\s+(.+)\s+\(.+\)$/.exec(r.line)
-      const testName = match && match[1] || undefined
-      return Object.assign({}, r, {
-        name: `${r.suiteName}: "${testName}"`,
-        testName
-      })
+      return {
+        suiteName: r.suiteName,
+        testName: (match && match[1]) || undefined
+      }
     })
-    .filter(hasCompleteInfo)
+    .filter(r => r.suiteName && r.testName)
     .reduce(
-      (acc: TestFailuresByName, next) => {
-        acc[next.name] = next
+      (acc: TestFailuresBySuite, next) => {
+        acc[next.suiteName] = acc[next.suiteName] || next
         return acc
       },
       {}

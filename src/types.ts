@@ -3,13 +3,11 @@ import { ThunkDispatch } from 'redux-thunk'
 
 export type TestFailure = {
   suiteName: string,
-  testName: string,
-  line: string,
-  name: string
+  testName: string
 }
 
-export type TestFailuresByName = {
-  [name: string]: TestFailure
+export type TestFailuresBySuite = {
+  [suite: string]: TestFailure
 }
 
 export type Suites = {
@@ -44,7 +42,7 @@ export type Store = (
 
 export type State = {
   config: Config,
-  testFailures: TestFailuresByName,
+  testFailures: TestFailuresBySuite,
   actions: ActionsLog
 }
 

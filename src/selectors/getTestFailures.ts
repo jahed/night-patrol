@@ -1,9 +1,9 @@
 import { createSelector, Selector } from 'reselect'
-import { State } from '../types'
+import { State, TestFailuresBySuite } from '../types'
 
-const getTestFailures: Selector<State, string[]> = createSelector(
+const getTestFailures: Selector<State, TestFailuresBySuite> = createSelector(
   state => state.testFailures,
-  testFailures => Object.keys(testFailures)
+  testFailures => testFailures
 )
 
 export {

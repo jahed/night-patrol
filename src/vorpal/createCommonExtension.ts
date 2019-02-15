@@ -1,43 +1,58 @@
 import { Questions } from 'inquirer'
+import _ from 'lodash'
 import Vorpal from 'vorpal'
 import { setCurrentEnvironment } from '../actions/config'
-import { runFailedTestByName } from '../actions/nightwatch'
+import { runTests } from '../actions/nightwatch'
 import { getEnvironments } from '../selectors/getEnvironments'
 import { getTestFailures } from '../selectors/getTestFailures'
 import { hasEnvironment } from '../selectors/hasEnvironment'
-import _ from 'lodash'
-import { Store } from '../types'
+import { Store, TestFailure } from '../types'
+
+const testFailureName = (failure: TestFailure) => (
+  `${failure.suiteName}: "${failure.testName}"`
+)
 
 const createCommonExtension = (store: Store): Vorpal.Extension => vorpal => [
   vorpal.command('failures list', 'List all tests that failed in the previous run')
     .action(() => {
-      const testChoices = getTestFailures(store.getState())
-      if (testChoices.length === 0) {
+      const failures = getTestFailures(store.getState())
+      if (Object.keys(failures).length === 0) {
         vorpal.log('No tests failed on the last run.')
         return Promise.resolve()
       }
 
-      vorpal.log(testChoices.join('\n'))
+      const output = Object.keys(failures)
+        .map(k => failures[k])
+        .map(f => testFailureName(f))
+        .join('\n')
+
+      vorpal.log(output)
       return Promise.resolve()
     }),
 
   vorpal.command('failures run', 'Run all tests that failed in the previous run')
     .action(function failuresRun () {
-      const testChoices = getTestFailures(store.getState())
-      if (testChoices.length === 0) {
+      const failures = getTestFailures(store.getState())
+      if (Object.keys(failures).length === 0) {
         vorpal.log('No tests failed on the last run.')
         return Promise.resolve()
       }
 
-      const question: Questions<{ testToRun: string }> = {
-        name: 'testToRun',
-        message: 'Which failed test would you like to run',
+      const question: Questions<{ suite: string }> = {
+        name: 'suite',
+        message: 'Which failed test suite would you like to run?',
         type: 'list',
-        choices: testChoices
+        choices: Object.keys(failures)
+          .map(k => failures[k])
+          .map(f => ({
+            name:  testFailureName(f),
+            value: f.suiteName,
+            short: f.suiteName
+          }))
       }
 
       return this.prompt(question)
-        .then(({ testToRun }) => store.dispatch(runFailedTestByName(testToRun)))
+        .then(({ suite }) => store.dispatch(runTests({ suite })))
     }),
 
   vorpal.command('env <env>', 'Change current environment')

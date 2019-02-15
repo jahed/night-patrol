@@ -28,7 +28,6 @@ test('should parse suite names', () => {
 test('should parse failures', () => {
   const expectedSuiteName = `tests${path.sep}scenarios${path.sep}leftDrawer`
   const expectedTestName = 'starts open on desktop'
-  const expectedName = `${expectedSuiteName}: "${expectedTestName}"`
   const suites = {
     'something/not/expected': [],
     [expectedSuiteName]: [],
@@ -38,9 +37,7 @@ test('should parse failures', () => {
   const result = parse({ suites, stdout })
 
   expect(result).toEqual({
-    [expectedName]: {
-      line: ` – ${expectedTestName} (5.222s)`,
-      name: expectedName,
+    [expectedSuiteName]: {
       suiteName: expectedSuiteName,
       testName: expectedTestName
     }

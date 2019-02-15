@@ -1,5 +1,5 @@
 import * as failureParser from '../parsers/failureParser'
-import { Suites, TestFailuresByName } from '../types'
+import { Suites, TestFailuresBySuite } from '../types'
 
 export const ActionType = {
   ADD_TEST_FAILURES: '@@night-patrol/testFailures/ADD_TEST_FAILURES',
@@ -8,7 +8,7 @@ export const ActionType = {
   CLEAR_TEST_FAILURES_FOR_SUITE: '@@night-patrol/testFailures/CLEAR_TEST_FAILURES_FOR_SUITE'
 }
 
-export const addTestFailures = ({ testFailures }: { testFailures: TestFailuresByName }) => ({
+export const addTestFailures = ({ testFailures }: { testFailures: TestFailuresBySuite }) => ({
   type: ActionType.ADD_TEST_FAILURES,
   payload: {
     testFailures

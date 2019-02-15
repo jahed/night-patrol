@@ -1,11 +1,11 @@
 import { omitBy } from 'lodash'
 import { Reducer } from 'redux'
 import { ActionType } from '../actions/testFailures'
-import { TestFailuresByName } from '../types'
+import { TestFailuresBySuite } from '../types'
 
 const initialState = {}
 
-const testFailures: Reducer<TestFailuresByName> = (state = initialState, action) => {
+const testFailures: Reducer<TestFailuresBySuite> = (state = initialState, action) => {
   switch (action.type) {
     case ActionType.ADD_TEST_FAILURES: {
       return {

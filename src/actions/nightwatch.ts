@@ -89,13 +89,3 @@ export const runTests = ({ suite, testname }: { suite?: string, testname?: strin
       })
   }
 )
-
-export const runFailedTestByName = (name: string): RunTests => (
-  (dispatch, getState) => {
-    const lastFailedTest = getState().testFailures[name]
-    return dispatch(runTests({
-      suite: lastFailedTest.suiteName,
-      testname: lastFailedTest.testName
-    }))
-  }
-)
