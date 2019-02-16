@@ -1,9 +1,13 @@
 import Vorpal from 'vorpal'
 
+const GLOBAL_COMMANDS = {
+  help: true,
+  exit: true
+}
+
 const clearCommands = (vorpal: Vorpal) => {
-  const GLOBAL_COMMANDS = ['help', 'exit']
   vorpal.commands
-    .filter(command => !GLOBAL_COMMANDS.includes(command._name))
+    .filter(command => !(command._name in GLOBAL_COMMANDS))
     .forEach(command => command.remove())
 }
 

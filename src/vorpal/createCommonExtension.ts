@@ -13,7 +13,9 @@ const testFailureName = (failure: TestFailure) => (
 )
 
 const createCommonExtension = (store: Store): Vorpal.Extension => vorpal => [
-  vorpal.command('failures list', 'List all tests that failed in the previous run')
+  vorpal
+    .command('failures list', 'List all tests that failed in the previous run')
+    .alias('failures ls', 'fls')
     .action(() => {
       const failures = getTestFailures(store.getState())
       if (Object.keys(failures).length === 0) {
@@ -30,7 +32,9 @@ const createCommonExtension = (store: Store): Vorpal.Extension => vorpal => [
       return Promise.resolve()
     }),
 
-  vorpal.command('failures run', 'Run all tests that failed in the previous run')
+  vorpal
+    .command('failures run', 'Run all tests that failed in the previous run')
+    .alias('fr')
     .action(function failuresRun () {
       const failures = getTestFailures(store.getState())
       if (Object.keys(failures).length === 0) {
@@ -55,7 +59,8 @@ const createCommonExtension = (store: Store): Vorpal.Extension => vorpal => [
         .then(({ suite }) => store.dispatch(runTests({ suite })))
     }),
 
-  vorpal.command('env <env>', 'Change current environment')
+  vorpal
+    .command('env <env>', 'Change current environment')
     .autocomplete({
       data: () => getEnvironments(store.getState())
     })
@@ -69,7 +74,9 @@ const createCommonExtension = (store: Store): Vorpal.Extension => vorpal => [
       return Promise.resolve()
     }),
 
-  vorpal.command('internals [path]', 'View the internal Night Patrol state')
+  vorpal
+    .command('state [path]', 'View the internal Night Patrol state')
+    .alias('internals')
     .action(({ path: statePath }) => {
       const state = store.getState()
       const internals = statePath ? _.get(state, statePath) : state

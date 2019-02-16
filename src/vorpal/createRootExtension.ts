@@ -14,16 +14,29 @@ const createRootExtension = (store: Store): Vorpal.Extension => vorpal => {
   store.dispatch(clearCurrentSuite())
 
   const commands = [
-    vorpal.command('run [suite]', 'Run all suites or just one')
+    vorpal
+      .command('list', 'List all test suites')
+      .alias('ls')
+      .types({ string: ['testname'] })
+      .action(() => {
+        vorpal.log(getTestSuites(store.getState()).join('\n'))
+        return Promise.resolve()
+      }),
+
+    vorpal
+      .command('run [suite]', 'Run all suites or just one')
+      .alias('r')
       .autocomplete({
         data: () => getTestSuites(store.getState())
       })
       .action(({ suite: suiteName }) => store.dispatch(runTests({ suite: suiteName }))),
 
-    vorpal.command('suite <suite>', 'Switch to a suite')
+    vorpal
+      .command('suite <suite>', 'Switch to a suite')
       .autocomplete({
         data: () => getTestSuites(store.getState())
       })
+      .alias('s', 'cd')
       .action(({ suite: suiteName }) => {
         const testNames = getTestCases(store.getState(), suiteName)
         if (!testNames) {

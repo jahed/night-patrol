@@ -15,7 +15,7 @@ const getDelimiter: Selector<State, string> = createSelector(
     }
 
     const environment = chalk.magenta(`nightwatch(${environmentParts.join('|')}):`)
-    const location = chalk.yellow(`${path.sep}${currentSuite || ''}`)
+    const location = chalk.yellow(`~${path.sep}${currentSuite || ''}`)
 
     return `${environment}${location} $ `
   }

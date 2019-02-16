@@ -68,7 +68,7 @@ declare module 'vorpal' {
       _fn: Action
       _cancel: Cancel | undefined
 
-      alias (command: string): this
+      alias (...command: string[]): this
 
       parse (value: (command: string, args: Args) => string): this
 

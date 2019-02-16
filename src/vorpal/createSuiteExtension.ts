@@ -38,7 +38,18 @@ const createSuiteExtension = (store: Store, suiteName: string) => {
     const alternativeSpace = ' '
 
     const commands = [
-      vorpal.command('run [testname]', 'Run all tests or just one')
+      vorpal
+        .command('list', 'List all test cases')
+        .alias('ls')
+        .types({ string: ['testname'] })
+        .action(() => {
+          vorpal.log(getTestCases(store.getState(), suiteName).join('\n'))
+          return Promise.resolve()
+        }),
+
+      vorpal
+        .command('run [testname]', 'Run all tests or just one')
+        .alias('r')
         .autocomplete({
           data () {
             return getTestCases(store.getState(), suiteName)
@@ -57,7 +68,9 @@ const createSuiteExtension = (store: Store, suiteName: string) => {
           }))
         }),
 
-      vorpal.command('back', 'Exit suite')
+      vorpal
+        .command('back', 'Exit suite')
+        .alias('b', 'cd ..', 'cd ~', 'cd ~/')
         .action(() => {
           unsubscribeFromStore()
           return goBack()
