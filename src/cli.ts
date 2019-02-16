@@ -99,7 +99,8 @@ const cli = () => {
 
   store.dispatch(setConfig({
     configPath: argv.config,
-    executablePath: argv.nightwatch
+    executablePath: argv.nightwatch,
+    currentEnvironment: argv.env
   }))
 
   const vorpal = new Vorpal()
