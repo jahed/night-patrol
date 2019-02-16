@@ -9,6 +9,7 @@ import { clearCommands } from './clearCommands'
 import { createCommonExtension } from './createCommonExtension'
 import { createRootExtension } from './createRootExtension'
 import { useExtensions } from './useExtensions'
+import { withoutVorpal } from './withoutVorpal'
 
 const createSuiteExtension = (store: Store, suiteName: string) => {
   return (vorpal: Vorpal) => {
@@ -57,16 +58,19 @@ const createSuiteExtension = (store: Store, suiteName: string) => {
           }
         })
         .types({ string: ['testname'] })
-        .action(({ testname: formattedTestName }) => {
-          const testName = formattedTestName
-            ? formattedTestName.replace(new RegExp(alternativeSpace, 'g'), realSpace)
-            : undefined
+        .action(({ testname: formattedTestName }) => withoutVorpal(
+          vorpal,
+          () => {
+            const testName = formattedTestName
+              ? formattedTestName.replace(new RegExp(alternativeSpace, 'g'), realSpace)
+              : undefined
 
-          return store.dispatch(runTests({
-            suite: suiteName,
-            testname: testName
-          }))
-        }),
+            return store.dispatch(runTests({
+              suite: suiteName,
+              testname: testName
+            }))
+          }
+        )),
 
       vorpal
         .command('back', 'Exit suite')

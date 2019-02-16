@@ -59,3 +59,13 @@ export type PackageJSON = {
   homepage: string,
   repository: string
 }
+
+export type ExecResult = {
+  code: number,
+  stdout: string,
+  stderr: string
+}
+
+export type ExecArgs = {
+  [key: string]: string | undefined
+}

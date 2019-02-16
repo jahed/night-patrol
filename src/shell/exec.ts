@@ -1,21 +1,29 @@
 import chalk from 'chalk'
-import { exec as execShellJs } from 'shelljs'
+import { spawn } from 'child_process'
+import { ExecArgs, ExecResult } from '../types'
+import { dataCollector } from '../utils/dataCollector'
+import { toExecArgs } from './toExecArgs'
 
-type ExecResult = {
-  code: number,
-  stdout: string,
-  stderr: string
-}
+export const exec = (executable: string, args?: ExecArgs) => new Promise<ExecResult>((resolve, reject) => {
+  const execArgs = toExecArgs(args)
+  console.log(chalk.grey(`Executing:  ${[executable, ...execArgs].join(' ')}`))
 
-export const exec = (command: string) => {
-  console.log(chalk.grey(`Executing:  ${command}`))
-  return new Promise<ExecResult>((resolve, reject) => {
-    execShellJs(command, (code, stdout, stderr) => {
-      if (code !== 0) {
-        reject({ code, stdout, stderr })
-        return
-      }
-      resolve({ code, stdout, stderr })
-    })
+  const childProcess = spawn(executable, execArgs)
+
+  childProcess.stdout.pipe(process.stdout)
+  childProcess.stderr.pipe(process.stderr)
+
+  const stdoutCollector = dataCollector(childProcess.stdout)
+  const stderrCollector = dataCollector(childProcess.stderr)
+
+  childProcess.on('close', (code: number) => {
+    const stdout = stdoutCollector().toString()
+    const stderr = stderrCollector().toString()
+
+    if (code !== 0) {
+      reject({ code, stdout, stderr })
+      return
+    }
+    resolve({ code, stdout, stderr })
   })
-}
+})

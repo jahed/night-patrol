@@ -9,7 +9,6 @@ import {
   removeTestFailure
 } from './testFailures'
 import { exec } from '../shell/exec'
-import { command } from '../shell/command'
 
 export const Action = {
   RUN_NIGHTWATCH_START: '@@night-patrol/nightwatch/RUN_NIGHTWATCH_START',
@@ -65,7 +64,7 @@ export const runTests = ({ suite, testname }: { suite?: string, testname?: strin
 
     dispatch(runNightWatchStart(nightWatchArgs))
 
-    return exec(command(executablePath, nightWatchArgs))
+    return exec(executablePath, nightWatchArgs)
       .then(() => {
         if (suite && testname) {
           return dispatch(removeTestFailure({

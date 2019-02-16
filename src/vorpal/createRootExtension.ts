@@ -9,6 +9,7 @@ import { clearCommands } from './clearCommands'
 import { createCommonExtension } from './createCommonExtension'
 import { createSuiteExtension } from './createSuiteExtension'
 import { useExtensions } from './useExtensions'
+import { withoutVorpal } from './withoutVorpal'
 
 const createRootExtension = (store: Store): Vorpal.Extension => vorpal => {
   store.dispatch(clearCurrentSuite())
@@ -29,7 +30,10 @@ const createRootExtension = (store: Store): Vorpal.Extension => vorpal => {
       .autocomplete({
         data: () => getTestSuites(store.getState())
       })
-      .action(({ suite: suiteName }) => store.dispatch(runTests({ suite: suiteName }))),
+      .action(({ suite: suiteName }) => withoutVorpal(
+        vorpal,
+        () => store.dispatch(runTests({ suite: suiteName }))
+      )),
 
     vorpal
       .command('suite <suite>', 'Switch to a suite')

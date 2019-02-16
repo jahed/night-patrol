@@ -7,6 +7,7 @@ import { getEnvironments } from '../selectors/getEnvironments'
 import { getTestFailures } from '../selectors/getTestFailures'
 import { hasEnvironment } from '../selectors/hasEnvironment'
 import { Store, TestFailure } from '../types'
+import { withoutVorpal } from './withoutVorpal'
 
 const testFailureName = (failure: TestFailure) => (
   `${failure.suiteName}: "${failure.testName}"`
@@ -56,7 +57,10 @@ const createCommonExtension = (store: Store): Vorpal.Extension => vorpal => [
       }
 
       return this.prompt(question)
-        .then(({ suite }) => store.dispatch(runTests({ suite })))
+        .then(({ suite }) => withoutVorpal(
+          vorpal,
+          () => store.dispatch(runTests({ suite }))
+        ))
     }),
 
   vorpal
