@@ -1,9 +1,10 @@
 {
   "name": "night-patrol",
   "version": "2.0.1",
-  "description": "Interactive CLI for Nightwatch Test Runner",
+  "description": "An Interactive Test Runner for Nightwatch",
   "author": "Jahed Ahmed",
   "license": "MIT",
+  "homepage": "https://github.com/jahed/night-patrol",
   "repository": "https://github.com/jahed/night-patrol",
   "keywords": [
     "nightwatch",
@@ -39,7 +40,9 @@
     "nightwatch": "^1.0.0"
   },
   "dependencies": {
+    "@types/chokidar": "1.7.5",
     "chalk": "2.4.2",
+    "chokidar": "2.1.1",
     "lodash": "4.17.11",
     "minimist": "1.2.0",
     "redux": "4.0.1",
@@ -61,7 +64,6 @@
     "@types/minimist": "1.2.0",
     "@types/nightwatch": "0.9.11",
     "@types/node": "10.12.26",
-    "@types/require-dir": "1.0.0",
     "@types/shelljs": "0.8.2",
     "husky": "1.3.1",
     "jest": "24.1.0",

@@ -34,7 +34,7 @@ const createRootExtension = (store: Store): Vorpal.Extension => vorpal => {
         clearCommands(vorpal)
         useExtensions(vorpal, [
           createCommonExtension(store),
-          createSuiteExtension(store, suiteName, testNames)
+          createSuiteExtension(store, suiteName)
         ])
 
         return Promise.resolve()

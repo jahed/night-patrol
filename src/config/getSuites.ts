@@ -4,8 +4,9 @@ import * as suitesParser from '../parsers/suitesParser'
 import { Suites } from '../types'
 
 const getSuites = (suiteDirectories: string[]): Suites => (
-  suiteDirectories.reduce((suites: Suites, srcDir) => {
-    const srcSuites = suitesParser.parse(requireDir(srcDir, { recurse: true }))
+  suiteDirectories.reduce((suites, srcDir) => {
+    const dirTree = requireDir(srcDir, { recurse: true, noCache: true })
+    const srcSuites = suitesParser.parse(dirTree)
     Object.keys(srcSuites).forEach(srcSuiteName => {
       const suiteName = Path.relative(
         process.cwd(),
@@ -14,7 +15,7 @@ const getSuites = (suiteDirectories: string[]): Suites => (
       suites[suiteName] = srcSuites[srcSuiteName]
     })
     return suites
-  }, {})
+  }, {} as Suites)
 )
 
 export {

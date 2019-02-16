@@ -1,5 +1,10 @@
-export const header = ({ heading, body }: { heading: string, body: string }) => `
-${heading}
-${'='.repeat(Math.max(10, heading.length + 2))}
+type Header = {
+  title: string,
+  subtitle: string
+}
 
-${body}`
+export const header = ({ title, subtitle }: Header): string => {
+  const fullTitle = `${title} ~ ${subtitle}`
+  const underline = '='.repeat(Math.min(Math.max(10, fullTitle.length), 80))
+  return ['', '  ' + fullTitle, '  ' + underline].join('\n')
+}

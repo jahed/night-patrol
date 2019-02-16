@@ -7,6 +7,9 @@ export const getDefaultConfig = (): Config => {
   return {
     name: packageJson.name,
     version: packageJson.version,
+    description: packageJson.description,
+    homepage: packageJson.homepage,
+    repository: packageJson.repository,
     configPath: path.resolve('./nightwatch.config.js'),
     executablePath: path.resolve('./node_modules/.bin/nightwatch'),
     environments: {},

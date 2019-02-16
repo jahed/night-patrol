@@ -38,7 +38,7 @@ export const parseChildNode = (node: DirNode | NightWatchTestSuite) => (
 )
 
 export const parseDirectoryNode = (dirNode: DirNode): Suites => {
-  return Object.keys(dirNode).reduce((result: Suites, childDir: string) => {
+  return Object.keys(dirNode).reduce((result, childDir) => {
     const childNode = dirNode[childDir]
     const childResult = parseChildNode(childNode)
     if (isTestNames(childResult)) {
@@ -49,7 +49,7 @@ export const parseDirectoryNode = (dirNode: DirNode): Suites => {
       })
     }
     return result
-  }, {})
+  }, {} as Suites)
 }
 
 export const parse = parseDirectoryNode

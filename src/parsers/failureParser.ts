@@ -37,11 +37,8 @@ export const parse = ({ suites, stdout }: { suites: Suites, stdout: string }): T
       }
     })
     .filter(r => r.suiteName && r.testName)
-    .reduce(
-      (acc: TestFailuresBySuite, next) => {
-        acc[next.suiteName] = acc[next.suiteName] || next
-        return acc
-      },
-      {}
-    )
+    .reduce((acc, next) => {
+      acc[next.suiteName] = acc[next.suiteName] || next
+      return acc
+    }, {} as TestFailuresBySuite)
 )

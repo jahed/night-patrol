@@ -1,5 +1,6 @@
 import { omitBy } from 'lodash'
 import { Reducer } from 'redux'
+import { Action as ConfigActionType } from '../actions/config'
 import { ActionType } from '../actions/testFailures'
 import { TestFailuresBySuite } from '../types'
 
@@ -14,7 +15,9 @@ const testFailures: Reducer<TestFailuresBySuite> = (state = initialState, action
       }
     }
     case ActionType.CLEAR_TEST_FAILURES_FOR_SUITE: {
-      return omitBy(state, failure => failure.suiteName === action.payload.suiteName)
+      return omitBy(state, failure => (
+        failure.suiteName === action.payload.suiteName
+      ))
     }
     case ActionType.REMOVE_TEST_FAILURE: {
       return omitBy(state, failure => (
@@ -24,6 +27,13 @@ const testFailures: Reducer<TestFailuresBySuite> = (state = initialState, action
     }
     case ActionType.CLEAR_TEST_FAILURES: {
       return initialState
+    }
+    case ConfigActionType.SET_CONFIG: {
+      return action.payload.error
+        ? state
+        : omitBy(state, failure => (
+          !action.payload.suites[failure.suiteName]
+        ))
     }
     default: {
       return state

@@ -17,18 +17,24 @@ export type Suites = {
 export type ConfigOptions = {
   configPath?: string,
   executablePath?: string
+  currentEnvironment?: string
+  currentSuite?: string
 }
 
 export type Config = {
   name: string,
   version: string,
+  description: string
+  homepage: string,
+  repository: string,
   configPath: string,
   executablePath: string,
   environments: { [name: string]: true },
   currentEnvironment: string,
   suiteDirectories: string[],
   suites: Suites,
-  currentSuite?: string
+  currentSuite?: string,
+  error?: string
 }
 
 export type ActionsLog = {
@@ -49,4 +55,7 @@ export type State = {
 export type PackageJSON = {
   name: string
   version: string
+  description: string
+  homepage: string,
+  repository: string
 }
