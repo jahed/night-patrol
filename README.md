@@ -9,7 +9,7 @@ An Interactive Test Runner for Nightwatch.
 
 - [Introducing Night Patrol](https://jahed.io/2018/01/29/introducing-night-patrol/)
 
-![Demonstration](https://www-static.jahed.io/night-patrol/np1.gif)
+![Demonstration](https://www-static.jahed.io/night-patrol/np3.gif)
 
 ## Installation
 
