@@ -5,26 +5,23 @@
 [![Patreon](https://img.shields.io/badge/patreon-donate-f96854.svg)](https://www.patreon.com/jahed)
 [![Liberapay](https://img.shields.io/badge/liberapay-donate-d9b113.svg)](https://liberapay.com/jahed)
 
-An Interactive CLI for Nightwatch. Check out the blog post: "[Introducing Night Patrol](https://jahed.io/2018/01/29/introducing-night-patrol/)".
+An Interactive Test Runner for Nightwatch.
+
+- [Introducing Night Patrol](https://jahed.io/2018/01/29/introducing-night-patrol/)
 
 ![Demonstration](https://www-static.jahed.io/night-patrol/np1.gif)
 
 ## Installation
 
-### Project Command
+You can install Night Patrol like any other dev dependency. Depending on if you
+use Yarn or NPM as your package manager, the command may vary.
 
-```
-npm install --save-dev night-patrol
-
+```sh
 yarn add --dev night-patrol
 ```
 
-### Global Command
-
 ```sh
-npm install -g night-patrol
-
-yarn global add night-patrol
+npm install --save-dev night-patrol
 ```
 
 ## Usage
@@ -32,20 +29,47 @@ yarn global add night-patrol
 To start a Night Patrol session, run:
 
 ```sh
-night-patrol --config <path-to-nightwatch-config>
+yarn night-patrol
+```
+
+```sh
+npx night-patrol
 ```
 
 For help, just run the `help` command in the Night Patrol session.
 
-### Override the Nightwatch Executable
+### Choose the Nightwatch Configuration
+
+By default, Night Patrol will look for a `nightwatch.config.js` in the current
+directory. You can use a different path by using the `--config` argument.
 
 ```sh
-night-patrol --nightwatch [path-to-nightwatch-executable] --config <path-to-nightwatch-config>
+night-patrol --config [path to nightwatch.config.js] 
 ```
 
-By default, Night Patrol will use the Nightwatch executable under `./node_modules/.bin/nightwatch`. If you want to use a different executable, use the `--nightwatch` argument.
+### Choose the Nightwatch Executable
 
+By default, Night Patrol will use the Nightwatch executable under
+`./node_modules/.bin/nightwatch`. If you want to use a different executable, use
+the `--nightwatch` argument.
+
+```sh
+night-patrol --nightwatch [path to nightwatch executable]
+```
+
+### Choose the Launch Environment
+
+
+By default, Night Patrol will use the `default` environment. If you want to use
+a different environment, use the `--env` argument.
+
+If the given environment is not found, Night Patrol will default to the first
+environment under `test_settings` in your Nightwatch configuration.
+
+```sh
+night-patrol --env [environment key from test_settings] 
+```
 
 ## License
 
-See `LICENSE` file.
+[MIT](LICENSE).
