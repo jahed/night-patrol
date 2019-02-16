@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.1.0](https://github.com/jahed/night-patrol/compare/v2.0.1...v2.1.0) (2019-02-16)
+
+
+### Bug Fixes
+
+* **cli:** ensure space between delimiter and text input ([178e012](https://github.com/jahed/night-patrol/commit/178e012))
+* **cli:** prevent printing junk on CTRL+C during test run ([e2f0aa6](https://github.com/jahed/night-patrol/commit/e2f0aa6))
+
+
+### Features
+
+* **cli:** add unix-like commands (ls, cd) and shorthand aliases ([8590759](https://github.com/jahed/night-patrol/commit/8590759))
+* **cli:** allow passing initial environment on launch ([72392fc](https://github.com/jahed/night-patrol/commit/72392fc))
+* **cli:** maintain suite path as heading instead of wordifying ([3dc8caa](https://github.com/jahed/night-patrol/commit/3dc8caa))
+* **cli:** track failures by suite instead of test case ([804896d](https://github.com/jahed/night-patrol/commit/804896d))
+* **cli:** watch files for changes and reload configuration ([cb79edc](https://github.com/jahed/night-patrol/commit/cb79edc)), closes [#8](https://github.com/jahed/night-patrol/issues/8)
+
+
+
 <a name="2.0.1"></a>
 ## [2.0.1](https://github.com/jahed/night-patrol/compare/v2.0.0...v2.0.1) (2019-02-13)
 
