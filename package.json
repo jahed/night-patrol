@@ -40,9 +40,9 @@
     "nightwatch": "^1.0.0"
   },
   "dependencies": {
-    "@types/chokidar": "1.7.5",
+    "@types/chokidar": "2.1.3",
     "chalk": "2.4.2",
-    "chokidar": "2.1.1",
+    "chokidar": "3.0.1",
     "lodash": "4.17.11",
     "minimist": "1.2.0",
     "redux": "4.0.1",
@@ -53,24 +53,24 @@
     "vorpal": "1.12.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "7.5.2",
-    "@commitlint/config-conventional": "7.5.0",
+    "@commitlint/cli": "8.0.0",
+    "@commitlint/config-conventional": "8.0.0",
     "@types/chalk": "2.2.0",
-    "@types/inquirer": "0.0.43",
-    "@types/jest": "24.0.5",
+    "@types/inquirer": "6.0.3",
+    "@types/jest": "24.0.13",
     "@types/jest-diff": "20.0.1",
-    "@types/lodash": "4.14.121",
+    "@types/lodash": "4.14.133",
     "@types/minimist": "1.2.0",
-    "@types/nightwatch": "0.9.12",
-    "@types/node": "10.12.26",
-    "husky": "1.3.1",
-    "jest": "24.1.0",
-    "nightwatch": "1.0.19",
+    "@types/nightwatch": "1.1.0",
+    "@types/node": "12.0.4",
+    "husky": "2.4.0",
+    "jest": "24.8.0",
+    "nightwatch": "1.1.11",
     "rimraf": "2.6.3",
-    "standard-version": "5.0.0",
-    "ts-jest": "23.10.5",
-    "tslint": "5.12.1",
+    "standard-version": "6.0.1",
+    "ts-jest": "24.0.2",
+    "tslint": "5.17.0",
     "tslint-config-standard": "8.0.1",
-    "typescript": "3.3.3"
+    "typescript": "3.5.1"
   }
 }
