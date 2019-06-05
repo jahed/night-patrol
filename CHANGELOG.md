@@ -1,6 +1,16 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [2.1.2](https://github.com/jahed/night-patrol/compare/v2.1.1...v2.1.2) (2019-06-05)
+
+
+### Build System
+
+* **deps:** remove empty type defs ([939fb9b](https://github.com/jahed/night-patrol/commit/939fb9b))
+* **deps:** upgrade dependencies ([250dc02](https://github.com/jahed/night-patrol/commit/250dc02))
+
+
 
 ## [2.1.1](https://github.com/jahed/night-patrol/compare/v2.1.0...v2.1.1) (2019-02-16)
 
