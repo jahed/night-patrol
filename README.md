@@ -7,9 +7,9 @@
 
 An Interactive Test Runner for Nightwatch.
 
-- [Introducing Night Patrol](https://jahed.io/2018/01/29/introducing-night-patrol/)
+- [Introducing Night Patrol](https://jahed.dev/2018/01/29/introducing-night-patrol/)
 
-![Demonstration](https://www-static.jahed.io/night-patrol/np3.gif)
+![Demonstration](https://www-static.jahed.dev/night-patrol/np3.gif)
 
 ## Installation
 
@@ -44,7 +44,7 @@ By default, Night Patrol will look for a `nightwatch.config.js` in the current
 directory. You can use a different path by using the `--config` argument.
 
 ```sh
-night-patrol --config [path to nightwatch.config.js] 
+night-patrol --config [path to nightwatch.config.js]
 ```
 
 ### Choose the Nightwatch Executable
@@ -67,7 +67,7 @@ If the given environment is not found, Night Patrol will default to the first
 environment under `test_settings` in your Nightwatch configuration.
 
 ```sh
-night-patrol --env [environment key from test_settings] 
+night-patrol --env [environment key from test_settings]
 ```
 
 ## License
