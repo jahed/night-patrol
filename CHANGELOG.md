@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.6](https://github.com/jahed/night-patrol/compare/v2.1.5...v2.1.6) (2019-07-11)
+
+
+### Build System
+
+* loosen prod dep versions to allow users to update on their end ([d047b68](https://github.com/jahed/night-patrol/commit/d047b68))
+
+
+
 ### [2.1.5](https://github.com/jahed/night-patrol/compare/v2.1.4...v2.1.5) (2019-07-11)
 
 
