@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.7](https://github.com/jahed/night-patrol/compare/v2.1.6...v2.1.7) (2019-07-31)
+
+
+### Bug Fixes
+
+* clear require cache when reloading nightwatch config ([04d5efa](https://github.com/jahed/night-patrol/commit/04d5efa))
+
+
+
 ### [2.1.6](https://github.com/jahed/night-patrol/compare/v2.1.5...v2.1.6) (2019-07-11)
 
 
