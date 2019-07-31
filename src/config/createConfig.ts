@@ -25,6 +25,7 @@ const createConfig = (options: ConfigOptions = {}): Config => {
   }
 
   try {
+    delete require.cache[require.resolve(config.configPath)]
     const nightwatchConfig = require(config.configPath)
 
     if (nightwatchConfig.test_settings) {
