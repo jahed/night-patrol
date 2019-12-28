@@ -70,5 +70,8 @@
     "tslint": "5.20.1",
     "tslint-config-standard": "9.0.0",
     "typescript": "3.7.4"
+  },
+  "resolutions": {
+    "vorpal/inquirer/lodash": "4.17.15"
   }
 }
