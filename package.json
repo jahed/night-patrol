@@ -36,6 +36,24 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
+  "funding": [
+    {
+      "type" : "Website",
+      "url" : "https://jahed.dev/donate"
+    },
+    {
+      "type" : "Patreon",
+      "url" : "https://patreon.com/jahed"
+    },
+    {
+      "type" : "PayPal",
+      "url" : "https://paypal.me/jahed/5"
+    },
+    {
+      "type" : "Liberapay",
+      "url" : "https://liberapay.com/jahed"
+    }
+  ],
   "peerDependencies": {
     "nightwatch": "^1.x"
   },
