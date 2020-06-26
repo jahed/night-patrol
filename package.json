@@ -28,7 +28,7 @@
     "watch": "yarn build --watch",
     "ready": "yarn lint && yarn test && yarn build",
     "push": "git push --follow-tags",
-    "deploy": "yarn ready && standard-version && yarn publish && yarn push",
+    "deploy": "yarn ready && standard-version && yarn publish --non-interactive && yarn push",
     "deps": "yarn upgrade-interactive --latest && yarn upgrade && git add yarn.lock '*package.json' && git commit -m 'build(deps): upgrade dependencies'"
   },
   "husky": {
