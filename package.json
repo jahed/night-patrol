@@ -1,6 +1,6 @@
 {
   "name": "night-patrol",
-  "version": "2.1.11",
+  "version": "2.1.12",
   "description": "An Interactive Test Runner for Nightwatch",
   "author": "Jahed Ahmed",
   "license": "MIT",
@@ -38,20 +38,20 @@
   },
   "funding": [
     {
-      "type" : "Website",
-      "url" : "https://jahed.dev/donate"
+      "type": "Website",
+      "url": "https://jahed.dev/donate"
     },
     {
-      "type" : "Patreon",
-      "url" : "https://patreon.com/jahed"
+      "type": "Patreon",
+      "url": "https://patreon.com/jahed"
     },
     {
-      "type" : "PayPal",
-      "url" : "https://paypal.me/jahed/5"
+      "type": "PayPal",
+      "url": "https://paypal.me/jahed/5"
     },
     {
-      "type" : "Liberapay",
-      "url" : "https://liberapay.com/jahed"
+      "type": "Liberapay",
+      "url": "https://liberapay.com/jahed"
     }
   ],
   "peerDependencies": {
