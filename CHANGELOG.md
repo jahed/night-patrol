@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.15](https://github.com/jahed/night-patrol/compare/v2.1.14...v2.1.15) (2020-08-02)
+
 ### [2.1.14](https://github.com/jahed/night-patrol/compare/v2.1.11...v2.1.14) (2020-06-26)
 
 ### [2.1.12](https://github.com/jahed/night-patrol/compare/v2.1.11...v2.1.12) (2020-06-26)
