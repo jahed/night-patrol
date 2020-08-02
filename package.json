@@ -90,6 +90,6 @@
     "typescript": "3.9.7"
   },
   "resolutions": {
-    "vorpal/inquirer/lodash": "4.17.15"
+    "vorpal/inquirer/lodash": "4.17.19"
   }
 }
