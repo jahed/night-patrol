@@ -1,4 +1,4 @@
-import { Questions } from 'inquirer'
+import { QuestionCollection } from 'inquirer'
 import _ from 'lodash'
 import Vorpal from 'vorpal'
 import { setCurrentEnvironment } from '../actions/config'
@@ -43,7 +43,7 @@ const createCommonExtension = (store: Store): Vorpal.Extension => vorpal => [
         return Promise.resolve()
       }
 
-      const question: Questions<{ suite: string }> = {
+      const question: QuestionCollection<{ suite: string }> = {
         name: 'suite',
         message: 'Which failed test suite would you like to run?',
         type: 'list',
